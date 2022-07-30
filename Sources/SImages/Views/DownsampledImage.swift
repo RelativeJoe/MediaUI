@@ -34,14 +34,14 @@ public struct DownsampledImage<Content: View>: View {
         self.resizable = resizable
     }
     public var body: some View {
-        if let oldImage {
-            if let width, let height, let image = oldImage.downsampledImage(maxWidth: width, maxHeight: height) {
+        if let oldImage = oldImage {
+            if let width = width, let height = height, let image = oldImage.downsampledImage(maxWidth: width, maxHeight: height) {
                 viewForImage(image)
                     .framey(width: image.maxDimensions(width: width, height: height).width, height: image.maxDimensions(width: width, height: height).height, masterWidth: self.width, masterHeight: self.height, master: squared)
-            }else if let width, let image = oldImage.downsampledImage(width: width) {
+            }else if let width = width, let image = oldImage.downsampledImage(width: width) {
                 viewForImage(image)
                     .framey(width: width, height: image.fitHeight(for: width), masterWidth: self.width, masterHeight: self.height, master: squared)
-            }else if let height, let image = oldImage.downsampledImage(height: height) {
+            }else if let height = height, let image = oldImage.downsampledImage(height: height) {
                 viewForImage(image)
                     .framey(width: image.fitWidth(for: height), height: height, masterWidth: self.width, masterHeight: self.height, master: squared)
             }else {

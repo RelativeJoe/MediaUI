@@ -25,23 +25,23 @@ public struct AnyImage: View {
 //MARK: - Public Initializers
 public extension AnyImage {
     init(_ data: Data?) {
-        guard let data else {return}
+        guard let data = data else {return}
         self.data = data
         self.unImage = UNImage(data: data)
-        if let unImage {
+        if let unImage = unImage {
             self.image = Image(unImage: unImage)
         }else {
             self.image = nil
         }
     }
     init(_ image: Image?) {
-        guard let image else {return}
+        guard let image = image else {return}
         self.image = image
         self.unImage = image.unImage
         self.data = unImage?.asData(.high)
     }
     init(_ unImage: UNImage?) {
-        guard let unImage else {return}
+        guard let unImage = unImage else {return}
         self.unImage = unImage
         self.image = Image(unImage: unImage)
         self.data = unImage.asData(.high)

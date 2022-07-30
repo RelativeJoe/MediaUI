@@ -45,7 +45,7 @@ public struct AnyBinding<Value> {
         let binding = Binding<Value?> {
             return bindingNonNilValue?.wrappedValue
         } set: { newValue in
-            guard let newValue else {return}
+            guard let newValue = newValue else {return}
             bindingNonNilValue?.wrappedValue = newValue
         }
         self.bindingValue = binding

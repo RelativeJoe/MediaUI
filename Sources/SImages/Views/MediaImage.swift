@@ -41,7 +41,7 @@ struct MediaImage<Content: View, Media: Mediabley>: View {
             Button(action: {
                 presentable.isPresented.toggle()
             }) {
-                if let mediable, mediable.data != Data() {
+                if let mediable = mediable, mediable.data != Data() {
                     image(for: AnyImage(mediable.data))
                 }else {
                     switch presentable.mediaState {
@@ -65,13 +65,13 @@ struct MediaImage<Content: View, Media: Mediabley>: View {
     func image(for anyImage: AnyImage?) -> some View {
         Group {
             if let oldImage = anyImage?.unImage {
-                if let width, let height, let image = oldImage.downsampledImage(maxWidth: width, maxHeight: height) {
+                if let width = width, let height = height, let image = oldImage.downsampledImage(maxWidth: width, maxHeight: height) {
                     viewForImage(image)
                         .framey(width: image.maxDimensions(width: width, height: height).width, height: image.maxDimensions(width: width, height: height).height, masterWidth: self.width, masterHeight: self.height, master: squared)
-                }else if let width, let image = oldImage.downsampledImage(width: width) {
+                }else if let width = width, let image = oldImage.downsampledImage(width: width) {
                     viewForImage(image)
                         .framey(width: width, height: image.fitHeight(for: width), masterWidth: self.width, masterHeight: self.height, master: squared)
-                }else if let height, let image = oldImage.downsampledImage(height: height) {
+                }else if let height = height, let image = oldImage.downsampledImage(height: height) {
                     viewForImage(image)
                         .framey(width: image.fitWidth(for: height), height: height, masterWidth: self.width, masterHeight: self.height, master: squared)
                 }else {
@@ -84,7 +84,7 @@ struct MediaImage<Content: View, Media: Mediabley>: View {
     }
     func updateState(pickerItem: PhotosPickerItem?) {
         presentable.mediaState = .loading
-        guard let pickerItem else {return}
+        guard let pickerItem = pickerItem else {return}
         Task {
             do {
                 guard let image = try await pickerItem.loadTransferable(type: Data.self) else {
