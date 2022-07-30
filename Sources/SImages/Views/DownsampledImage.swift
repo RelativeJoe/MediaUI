@@ -24,7 +24,7 @@ public struct DownsampledImage<Content: View>: View {
         self.resizable = nil
         self.placeHolder = nil
     }
-    init(image: AnyBinding<UNImage>, height: AnyBinding<CGFloat> = .wrapped(nil), width: AnyBinding<CGFloat> = .wrapped(nil), squared: Bool = false, aspectRatio: (CGFloat?, ContentMode)?, resizable: AnyBinding<Bool>?, @ViewBuilder content: () -> Content? = {EmptyView()}) {
+    init(image: AnyBinding<UNImage>, height: AnyBinding<CGFloat> = .wrapped(nil), width: AnyBinding<CGFloat> = .wrapped(nil), squared: Bool = false, aspectRatio: (CGFloat?, ContentMode)?, resizable: AnyBinding<Bool>?, @ViewBuilder content: () -> Content? = {nil}) {
         self._oldImage = image.value
         self._height = height.value
         self._width = width.value

@@ -4,6 +4,7 @@
 //
 //  Created by Joe Maghzal on 6/17/22.
 //
+#if canImport(SwiftCharts)
 import SwiftUI
 import PhotosUI
 import STools
@@ -144,4 +145,4 @@ struct MediaImage<Content: View, Media: Mediabley>: View {
         }
     }
 }
-
+#endif
