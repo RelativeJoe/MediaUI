@@ -16,7 +16,7 @@ let package = Package(
             targets: ["SImages"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/NoeOnJupiter/STools", "1.0.2"..<"1.0.5")
+        .package(url: "https://github.com/NoeOnJupiter/STools", "1.0.1"..<"1.0.2")
     ],
     targets: [
         .target(
@@ -29,3 +29,4 @@ let package = Package(
             dependencies: ["SImages"]),
     ]
 )
+
