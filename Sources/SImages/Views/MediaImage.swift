@@ -4,7 +4,7 @@
 //
 //  Created by Joe Maghzal on 6/17/22.
 //
-#if canImport(SwiftCharts)
+#if canImport(Charts)
 import SwiftUI
 import PhotosUI
 import STools
