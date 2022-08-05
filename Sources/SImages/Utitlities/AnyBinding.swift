@@ -20,22 +20,12 @@ public struct AnyBinding<Value> {
             bindingValue = newValue
         }
     }
-    func unwrappedValue(defaultValue: Value) -> Binding<Value> {
-            guard let value = self.bindingValue.wrappedValue else {
-                return Binding(get: {
-                    return wrappedValue ?? defaultValue
-                }, set: { newValue in
-                    self.bindingValue.wrappedValue = newValue
-                })
-            }
-            return Binding(get: {
-                return value
-            }, set: { newValue in
-                self.bindingValue.wrappedValue = newValue
-            })
-        }
-    private var bindingValue: Binding<Value?>
     let wrappedValue: Value?
+    private var bindingValue: Binding<Value?>
+}
+
+//MARK: - Private Initializers
+extension AnyBinding {
     init(bindingValue: Binding<Value?>? = .constant(nil), wrappedValue: Value? = nil) {
         self.wrappedValue = wrappedValue
         self.bindingValue = bindingValue ?? .constant(nil)
@@ -50,13 +40,31 @@ public struct AnyBinding<Value> {
         }
         self.bindingValue = binding
     }
-    static public func binding(_ bindingValue: Binding<Value?>?) -> AnyBinding {
+}
+
+//MARK: - Public Functions
+public extension AnyBinding {
+    func unwrappedValue(defaultValue: Value) -> Binding<Value> {
+        guard let value = self.bindingValue.wrappedValue else {
+            return Binding(get: {
+                return wrappedValue ?? defaultValue
+            }, set: { newValue in
+                self.bindingValue.wrappedValue = newValue
+            })
+        }
+        return Binding(get: {
+            return value
+        }, set: { newValue in
+            self.bindingValue.wrappedValue = newValue
+        })
+    }
+    static func binding(_ bindingValue: Binding<Value?>?) -> AnyBinding {
         return AnyBinding(bindingValue: bindingValue)
     }
-    static public func binding(_ bindingValue: Binding<Value>?) -> AnyBinding {
+    static func binding(_ bindingValue: Binding<Value>?) -> AnyBinding {
         return AnyBinding(bindingNonNilValue: bindingValue)
     }
-    static public func wrapped(_ wrappedValue: Value?) -> AnyBinding {
+    static func wrapped(_ wrappedValue: Value?) -> AnyBinding {
         return AnyBinding(wrappedValue: wrappedValue)
     }
 }

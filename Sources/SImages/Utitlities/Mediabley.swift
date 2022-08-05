@@ -9,7 +9,19 @@ import SwiftUI
 import PhotosUI
 
 @available(iOS 16.0, macOS 13.0, *)
-public protocol Mediabley {
+public protocol Mediabley: Identifiable, Hashable, Equatable {
+    var id: UUID {get set}
     var data: Data {get set}
     static var empty: Self {get}
+}
+
+@available(iOS 16.0, macOS 13.0, *)
+public extension Mediabley {
+    var id: UUID {
+        get {
+            return id
+        }
+        set {
+        }
+    }
 }

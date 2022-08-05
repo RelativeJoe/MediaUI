@@ -8,7 +8,20 @@
 import SwiftUI
 import STools
 
+//MARK: - Public Helpers
 public extension Data {
+    var unImage: UNImage? {
+        get {
+            return UNImage(data: self)
+        }
+        set {
+            self = newValue?.asData(.high) ?? Data()
+        }
+    }
+}
+
+//MARK: - Private Helpers
+extension Data {
     func downSampled(height: CGFloat) -> UNImage? {
         guard let oldImage = UNImage(data: self), let image = self.downsample(to: CGSize(width: oldImage.fitWidth(for: height), height: height)) else {
             return nil
@@ -47,13 +60,5 @@ public extension Data {
 #else
         return UNImage(cgImage: downsampledImage)
 #endif
-    }
-    var unImage: UNImage? {
-        get {
-            return UNImage(data: self)
-        }
-        set {
-            self = newValue?.asData(.high) ?? Data()
-        }
     }
 }
