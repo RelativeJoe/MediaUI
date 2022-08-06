@@ -47,6 +47,9 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
             }
         }.photosPicker(isPresented: $isPresented, selection: $pickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
         .onChange(of: pickerItems) { newValue in
+            content.append(contentsOf: newValue.map { _ in
+                return Medias.empty
+            })
             newValue.forEach { item in
                 updateState(pickerItem: item)
             }
@@ -59,16 +62,19 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
 private extension MediaSet {
     func updateState(pickerItem: PhotosPickerItem?) {
         guard let pickerItem = pickerItem else {return}
-        DispatchQueue.main.async { [self] in
-            content.append(Medias.empty)
-        }
         Task {
-            guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {return}
+            guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {
+                pickerItems.removeAll(where: {$0 == pickerItem})
+                guard let index = content.firstIndex(where: {$0 == .empty}) else {return}
+                content.remove(at: index)
+                return
+            }
             DispatchQueue.main.async { [self] in
                 guard let index = content.firstIndex(where: {$0 == .empty}) else {return}
                 content[index].data = image
             }
         }
+        pickerItems.removeAll(where: {$0 == pickerItem})
     }
     init(isPresented: Binding<Bool>, content: Binding<[Medias]>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, contentForItem: ((Medias, Int) -> Content)?, contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?) {
         self._isPresented = isPresented
