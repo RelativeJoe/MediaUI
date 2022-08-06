@@ -15,6 +15,7 @@ import PhotosUI
 public struct MediaSet<Medias: Mediabley, Content: View>: View {
     @Binding private var isPresented: Bool
     @State private var pickerItems = [PhotosPickerItem]()
+    @State private var blocked = false
     @Binding private var content: [Medias]
     private let filter: PHPickerFilter?
     private let encoding: PhotosPickerItem.EncodingDisambiguationPolicy
@@ -40,13 +41,15 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
             }
             ForEach(Array(content.enumerated()), id: \.element) { index, item in
                 if item == .empty {
-                    ProgressView()
+                     ProgressView()
                 }else {
                     contentForMedia?(DownsampledImage<Text>(image: .binding($content[index].data.unImage)), item, index)
                 }
             }
         }.photosPicker(isPresented: $isPresented, selection: $pickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
         .onChange(of: pickerItems) { newValue in
+            guard !blocked else {return}
+            blocked.toggle()
             content.append(contentsOf: newValue.map { _ in
                 return Medias.empty
             })
@@ -78,6 +81,7 @@ private extension MediaSet {
                 }
             }
             pickerItems.removeAll(where: {$0 == pickerItem})
+            blocked = !pickerItems.isEmpty
         }
     }
     init(isPresented: Binding<Bool>, content: Binding<[Medias]>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, contentForItem: ((Medias, Int) -> Content)?, contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?) {
