@@ -39,9 +39,9 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
             if content.isEmpty {
                 Color.clear
             }
-            ForEach(Array(content.enumerated()), id: \.element.id) { index, item in
+            ForEach(Array(content.enumerated()), id: \.offset) { index, item in
                 if item.data == Data() {
-                    Color.accentColor
+                    ProgressView()
                 }else {
                     contentForMedia?(DownsampledImage<Text>(image: .binding($content[index].data.unImage)), item, index)
                 }
