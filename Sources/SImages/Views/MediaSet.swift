@@ -34,11 +34,13 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
         self.library = PHPhotoLibrary.shared()
     }
     public var body: some View {
-        ForEach(Array(content.enumerated()), id: \.offset) { index, item in
-            if let contentForItem {
-                contentForItem(item, index)
-            }else if let contentForMedia {
-                contentForMedia(MediaImage<Text, Medias>(mediable: .binding($content[index])).disabledPicker(), item, index)
+        VStack {
+            ForEach(Array(content.enumerated()), id: \.offset) { index, item in
+                if let contentForItem {
+                    contentForItem(item, index)
+                }else if let contentForMedia {
+                    contentForMedia(MediaImage<Text, Medias>(mediable: .binding($content[index])).disabledPicker(), item, index)
+                }
             }
         }.photosPicker(isPresented: $isPresented, selection: $pickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
     }
