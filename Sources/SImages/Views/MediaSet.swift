@@ -40,7 +40,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
                 Color.clear
             }
             ForEach(Array(content.enumerated()), id: \.element) { index, item in
-                if item == .empty {
+                if item.data == Data() {
                      ProgressView()
                 }else {
                     contentForMedia?(DownsampledImage<Text>(image: .binding($content[index].data.unImage)), item, index)
@@ -65,22 +65,21 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
 private extension MediaSet {
     func updateState(pickerItem: PhotosPickerItem?) {
         DispatchQueue.global(qos: .userInitiated).async { [self] in
-            guard let pickerItem = pickerItem else {return}
+            guard let pickerItem = pickerItem, let itemIndex = pickerItems.firstIndex(of: pickerItem), let index = content.firstIndex(where: {$0.data == Data()}) else {return}
             Task {
                 guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {
-                    pickerItems.removeAll(where: {$0 == pickerItem})
-                    guard let index = content.firstIndex(where: {$0 == .empty}) else {return}
+                    pickerItems.remove(at: itemIndex)
+                    content.remove(at: index)
                     DispatchQueue.main.async { [self] in
                         content.remove(at: index)
                     }
                     return
                 }
                 DispatchQueue.main.async { [self] in
-                    guard let index = content.firstIndex(where: {$0 == .empty}) else {return}
                     content[index].data = image
                 }
             }
-            pickerItems.removeAll(where: {$0 == pickerItem})
+            pickerItems.remove(at: itemIndex)
             blocked = !pickerItems.isEmpty
         }
     }
