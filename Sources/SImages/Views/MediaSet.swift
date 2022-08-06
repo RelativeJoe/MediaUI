@@ -78,9 +78,9 @@ private extension MediaSet {
                 DispatchQueue.main.async { [self] in
                     content[index].data = image
                 }
+                pickerItems.remove(at: itemIndex)
+                blocked = !pickerItems.isEmpty
             }
-            pickerItems.remove(at: itemIndex)
-            blocked = !pickerItems.isEmpty
         }
     }
     init(isPresented: Binding<Bool>, content: Binding<[Medias]>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, contentForItem: ((Medias, Int) -> Content)?, contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?) {
