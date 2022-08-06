@@ -1,3 +1,4 @@
 # SImages
 
-A description of this package.
+See for yourself: 
+![](https://media.giphy.com/media/zavUNyQwkrirACbybU/giphy-downsized-large.gif)
