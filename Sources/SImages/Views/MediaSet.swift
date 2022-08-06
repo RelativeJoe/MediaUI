@@ -48,11 +48,11 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
             }
         }.photosPicker(isPresented: $isPresented, selection: $pickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
         .onChange(of: pickerItems) { newValue in
+            blocked = !pickerItems.isEmpty
             guard !blocked else {return}
             newValue.forEach { _ in
                 content.append(Medias.empty)
             }
-            blocked.toggle()
             newValue.forEach { item in
                 updateState(pickerItem: item)
             }
@@ -69,9 +69,7 @@ private extension MediaSet {
             guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {
                 pickerItems.removeAll(where: {$0 == pickerItem})
                 if let index = content.firstIndex(where: {$0.data == Data()}) {
-                    DispatchQueue.main.async { [self] in
-                        content.remove(at: index)
-                    }
+                    content.remove(at: index)
                 }
                 return
             }
@@ -79,7 +77,6 @@ private extension MediaSet {
                 content[index].data = image
             }
             pickerItems.removeAll(where: {$0 == pickerItem})
-            blocked = !pickerItems.isEmpty
         }
     }
     init(isPresented: Binding<Bool>, content: Binding<[Medias]>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, contentForItem: ((Medias, Int) -> Content)?, contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?) {
