@@ -61,9 +61,9 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
 @available(iOS 16.0, *)
 private extension MediaSet {
     func updateState(pickerItem: PhotosPickerItem?) {
-        Task {
             content.append(Medias.empty)
-            DispatchQueue.global(qos: .userInitiated).async {
+        DispatchQueue.global(qos: .userInitiated).async {
+            Task {
                 guard let pickerItem = pickerItem else {return}
                 guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {
                     pickerItems.removeAll(where: {$0 == pickerItem})
@@ -79,7 +79,7 @@ private extension MediaSet {
                         content[index].data = image
                     }
                     pickerItems.removeAll(where: {$0 == pickerItem})
-                    blocked = !pickerItem.isEmpty
+                    blocked = !pickerItems.isEmpty
                 }
             }
         }
