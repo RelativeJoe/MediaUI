@@ -14,7 +14,7 @@ public struct DownsampledImage<Content: View>: View {
     @Binding private var width: CGFloat?
     private let placeHolder: Content?
     private let squared: Bool
-    private let resizable: AnyBinding<Bool>?
+    private let resizable: Bool
     private let aspectRatio: (CGFloat?, ContentMode)?
 ///DownsampledImage: A DownsampledImage is a View that displays an Image in a Downsampled style.
     public init(image: AnyBinding<UNImage>) {
@@ -23,7 +23,7 @@ public struct DownsampledImage<Content: View>: View {
         self._width = .constant(nil)
         self.squared = false
         self.aspectRatio = nil
-        self.resizable = nil
+        self.resizable = false
         self.placeHolder = nil
     }
     public var body: some View {
@@ -48,7 +48,7 @@ public struct DownsampledImage<Content: View>: View {
 
 //MARK: - Private Initializer
 private extension DownsampledImage {
-    init(image: AnyBinding<UNImage>, height: AnyBinding<CGFloat> = .wrapped(nil), width: AnyBinding<CGFloat> = .wrapped(nil), squared: Bool = false, aspectRatio: (CGFloat?, ContentMode)?, resizable: AnyBinding<Bool>?, @ViewBuilder content: () -> Content? = {nil}) {
+    init(image: AnyBinding<UNImage>, height: AnyBinding<CGFloat> = .wrapped(nil), width: AnyBinding<CGFloat> = .wrapped(nil), squared: Bool = false, aspectRatio: (CGFloat?, ContentMode)?, resizable: Bool, @ViewBuilder content: () -> Content? = {nil}) {
         self._oldImage = image.value
         self._height = height.value
         self._width = width.value
@@ -62,16 +62,13 @@ private extension DownsampledImage {
 //MARK: - Private Functions
 private extension DownsampledImage {
     @ViewBuilder func viewForImage(_ unImage: UNImage) -> some View {
-        let binding = Binding(get: {
-            return resizable?.wrappedValue ?? false
-        }, set: { newValue in
-            resizable?.value.wrappedValue = newValue
-        })
         Image(unImage: unImage)
-            .stateModifier(binding) { image in
-                image.resizable()
+            .stateModifier(.constant(resizable)) { image in
+                image
+                    .resizable()
             }.stateModifier(.constant(aspectRatio != nil)) { view in
-                view.aspectRatio(aspectRatio?.0, contentMode: aspectRatio!.1)
+                view
+                    .aspectRatio(aspectRatio?.0, contentMode: aspectRatio!.1)
             }
     }
 }
@@ -85,13 +82,13 @@ public extension DownsampledImage {
         }
     }
 ///DownsampledImage: Sets the mode by which SwiftUI resizes an Image to fit it's space.
-    func resizable(_ resize: AnyBinding<Bool> = .wrapped(false)) -> Self {
-        return DownsampledImage(image: .binding($oldImage), height: .binding($height), width: .binding($width), squared: squared, aspectRatio: aspectRatio, resizable: resize) {
+    func isResizable() -> Self {
+        return DownsampledImage(image: .binding($oldImage), height: .binding($height), width: .binding($width), squared: squared, aspectRatio: aspectRatio, resizable: true) {
             placeHolder
         }
     }
 ///DownsampledImage: Constrains this View's dimesnions to the specified aspect rario.
-    func aspectRatio(_ ratio: CGFloat? = nil, contentMode: ContentMode) -> Self {
+    func aspect(_ ratio: CGFloat? = nil, contentMode: ContentMode) -> Self {
         return DownsampledImage(image: .binding($oldImage), height: .binding($height), width: .binding($width), squared: squared, aspectRatio: (ratio, contentMode), resizable: resizable) {
             placeHolder
         }

@@ -18,7 +18,7 @@ public struct MediaImage<Content: View, Media: Mediabley>: View {
     @State private var presentable = PresentableMedia()
     private let placeHolder: Content?
     private let squared: Bool
-    private let resizable: AnyBinding<Bool>?
+    private let resizable: Bool
     private let aspectRatio: (CGFloat?, ContentMode)?
     private let disabledPicker: Bool
 ///MediaImage: A MediaImage is a View that displays a default Image which can be tapped in order to present a PhotosPicker & dynamically display the picked Image in a Downsampled style.
@@ -28,31 +28,30 @@ public struct MediaImage<Content: View, Media: Mediabley>: View {
         self._width = .constant(nil)
         self.squared = false
         self.aspectRatio = nil
-        self.resizable = nil
+        self.resizable = false
         self.placeHolder = nil
         self.disabledPicker = false
     }
     public var body: some View {
-        VStack {
-            Button(action: {
-                presentable.isPresented.toggle()
-            }) {
-                if let mediable = mediable, mediable.data != Data() {
-                    image(for: AnyImage(mediable.data))
-                }else {
-                    switch presentable.mediaState {
-                        case .failure(let error):
-                            Text(error.localizedDescription)
-                        case .loading:
-                            ProgressView()
-                        case .success(let anyImage):
-                            image(for: anyImage)
-                        default:
-                            placeHolder
-                    }
+        Button(action: {
+            presentable.isPresented.toggle()
+        }) {
+            if let mediable = mediable, mediable.data != Data() {
+                image(for: AnyImage(mediable.data))
+            }else {
+                switch presentable.mediaState {
+                    case .failure(let error):
+                        Text(error.localizedDescription)
+                    case .loading:
+                        ProgressView()
+                    case .success(let anyImage):
+                        image(for: anyImage)
+                    default:
+                        placeHolder
                 }
-            }.disabled(disabledPicker)
-        }.photosPicker(isPresented: $presentable.isPresented, selection: $presentable.pickerItem, matching: .images)
+            }
+        }.disabled(disabledPicker)
+        .photosPicker(isPresented: $presentable.isPresented, selection: $presentable.pickerItem, matching: .images)
         .onChange(of: presentable.pickerItem) { newValue in
             updateState(pickerItem: newValue)
         }
@@ -62,7 +61,7 @@ public struct MediaImage<Content: View, Media: Mediabley>: View {
 //MARK: - Private Initializer
 @available(iOS 16.0, macOS 13.0, *)
 private extension MediaImage {
-    init(mediable: AnyBinding<Media>, height: AnyBinding<CGFloat> = .wrapped(nil), width: AnyBinding<CGFloat> = .wrapped(nil), squared: Bool = false, aspectRatio: (CGFloat?, ContentMode)?, resizable: AnyBinding<Bool>?, disabled: Bool, @ViewBuilder content: () -> Content? = {EmptyView()}) {
+    init(mediable: AnyBinding<Media>, height: AnyBinding<CGFloat> = .wrapped(nil), width: AnyBinding<CGFloat> = .wrapped(nil), squared: Bool = false, aspectRatio: (CGFloat?, ContentMode)?, resizable: Bool, disabled: Bool, @ViewBuilder content: () -> Content? = {EmptyView()}) {
         self._mediable = mediable.unwrappedValue(defaultValue: .empty)
         self._height = height.value
         self._width = width.value
@@ -121,16 +120,13 @@ private extension MediaImage {
         }
     }
     @ViewBuilder func viewForImage(_ unImage: UNImage) -> some View {
-        let binding = Binding(get: {
-            return resizable?.wrappedValue ?? false
-        }, set: { newValue in
-            resizable?.value.wrappedValue = newValue
-        })
         Image(unImage: unImage)
-            .stateModifier(binding) { image in
-                image.resizable()
+            .stateModifier(.constant(resizable)) { image in
+                image
+                    .resizable()
             }.stateModifier(.constant(aspectRatio != nil)) { view in
-                view.aspectRatio(aspectRatio?.0, contentMode: aspectRatio!.1)
+                view
+                    .aspectRatio(aspectRatio?.0, contentMode: aspectRatio!.1)
             }
     }
 }
@@ -145,13 +141,13 @@ public extension MediaImage {
         }
     }
 ////MediaImage: Sets the mode by which SwiftUI resizes an Image to fit it's space.
-    func resizable(_ resize: AnyBinding<Bool> = .wrapped(false)) -> Self {
-        return MediaImage(mediable: .binding($mediable), height: .binding($height), width: .binding($width), squared: squared, aspectRatio: aspectRatio, resizable: resize, disabled: disabledPicker) {
+    func isResizable() -> Self {
+        return MediaImage(mediable: .binding($mediable), height: .binding($height), width: .binding($width), squared: squared, aspectRatio: aspectRatio, resizable: true, disabled: disabledPicker) {
             placeHolder
         }
     }
 ///MediaImage: Constrains this View's dimesnions to the specified aspect rario.
-    func aspectRatio(_ ratio: CGFloat? = nil, contentMode: ContentMode) -> Self {
+    func aspect(_ ratio: CGFloat? = nil, contentMode: ContentMode) -> Self {
         return MediaImage(mediable: .binding($mediable), height: .binding($height), width: .binding($width), squared: squared, aspectRatio: (ratio, contentMode), resizable: resizable, disabled: disabledPicker) {
             placeHolder
         }

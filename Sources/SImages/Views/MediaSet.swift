@@ -84,11 +84,11 @@ public extension MediaSet {
         MediaSet(isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForItem: contentForItem, contentForMedia: contentForMedia)
     }
 ///MediaSet: Assing the content to be displayed for each of the picked Photos
-    func content(_ contentForItem: ((Medias, Int) -> Content)?) -> Self {
+    func content(@ViewBuilder contentForItem: @escaping (Medias, Int) -> Content) -> Self {
         MediaSet(isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForItem: contentForItem, contentForMedia: contentForMedia)
     }
 ///MediaSet: Assing the MediaImage to be displayed for each of the picked Photos
-    func content(_ contentForMedia: ((MediaImage<Text, Medias>, Medias, Int) -> Content)?) -> Self {
+    func content(@ViewBuilder contentForMedia: @escaping (MediaImage<Text, Medias>, Medias, Int) -> Content) -> Self {
         MediaSet(isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForItem: contentForItem, contentForMedia: contentForMedia)
     }
 }
