@@ -15,7 +15,7 @@ import PhotosUI
 public struct MediaSet<Medias: Mediabley, Content: View>: View {
     @Binding private var isPresented: Bool
     @State private var pickerItems = [PhotosPickerItem]()
-    @State private var blocked = false
+    @State private var bindingPickerItems = [PhotosPickerItem]()
     @Binding private var content: [Medias]
     private let filter: PHPickerFilter?
     private let encoding: PhotosPickerItem.EncodingDisambiguationPolicy
@@ -46,18 +46,17 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
                     contentForMedia?(DownsampledImage<Text>(image: .binding($content[index].data.unImage)), item, index)
                 }
             }
-        }.photosPicker(isPresented: $isPresented, selection: $pickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
-        .onChange(of: pickerItems) { newValue in
-            guard !blocked else {
-                blocked = !newValue.isEmpty
-                return
-            }
-            newValue.forEach { _ in
+        }.photosPicker(isPresented: $isPresented, selection: $bindingPickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
+        .onChange(of: bindingPickerItems) { newValue in
+            guard !newValue.isEmpty else {return}
+            pickerItems = bindingPickerItems
+            pickerItems.forEach { _ in
                 content.append(Medias.empty)
             }
-            newValue.forEach { item in
+            pickerItems.forEach { item in
                 updateState(pickerItem: item)
             }
+            bindingPickerItems.removeAll()
         }
     }
 }
