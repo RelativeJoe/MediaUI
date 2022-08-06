@@ -34,9 +34,13 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
         self.library = PHPhotoLibrary.shared()
     }
     public var body: some View {
-        Group {
-            ForEach(Array(content.enumerated()), id: \.element) { index, item in
-                contentForMedia?(DownsampledImage<Text>(image: .binding($content[index].data.unImage)), item, index)
+        ZStack {
+            Color.clear
+                .frame(width: 200, height: 200)
+            Group {
+                ForEach(Array(content.enumerated()), id: \.element) { index, item in
+                    contentForMedia?(DownsampledImage<Text>(image: .binding($content[index].data.unImage)), item, index)
+                }
             }
         }.photosPicker(isPresented: $isPresented, selection: $pickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
         .onChange(of: pickerItems) { newValue in
