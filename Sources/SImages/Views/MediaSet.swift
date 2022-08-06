@@ -53,7 +53,6 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
             newValue.forEach { item in
                 updateState(pickerItem: item)
             }
-            blocked.toggle()
         }
     }
 }
@@ -64,22 +63,25 @@ private extension MediaSet {
     func updateState(pickerItem: PhotosPickerItem?) {
         Task {
             content.append(Medias.empty)
-            guard let pickerItem = pickerItem else {return}
-            guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {
-                pickerItems.removeAll(where: {$0 == pickerItem})
-                if let index = content.firstIndex(where: {$0.data == Data()}) {
-                    DispatchQueue.main.async { [self] in
-                        content.remove(at: index)
+            DispatchQueue.global(qos: .userInitiated).async {
+                guard let pickerItem = pickerItem else {return}
+                guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {
+                    pickerItems.removeAll(where: {$0 == pickerItem})
+                    if let index = content.firstIndex(where: {$0.data == Data()}) {
+                        DispatchQueue.main.async { [self] in
+                            content.remove(at: index)
+                        }
                     }
+                    return
                 }
-                return
-            }
-            DispatchQueue.main.async { [self] in
-                if let index = content.firstIndex(where: {$0.data == Data()}) {
-                    content[index].data = image
+                DispatchQueue.main.async { [self] in
+                    if let index = content.firstIndex(where: {$0.data == Data()}) {
+                        content[index].data = image
+                    }
+                    pickerItems.removeAll(where: {$0 == pickerItem})
+                    blocked = !pickerItem.isEmpty
                 }
             }
-            pickerItems.removeAll(where: {$0 == pickerItem})
         }
     }
     init(isPresented: Binding<Bool>, content: Binding<[Medias]>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, contentForItem: ((Medias, Int) -> Content)?, contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?) {
