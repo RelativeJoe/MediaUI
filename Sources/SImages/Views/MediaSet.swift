@@ -53,6 +53,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
             newValue.forEach { item in
                 updateState(pickerItem: item)
             }
+            blocked.toggle()
         }
     }
 }
@@ -79,7 +80,6 @@ private extension MediaSet {
                 }
             }
             pickerItems.removeAll(where: {$0 == pickerItem})
-            blocked = !pickerItems.isEmpty
         }
     }
     init(isPresented: Binding<Bool>, content: Binding<[Medias]>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, contentForItem: ((Medias, Int) -> Content)?, contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?) {
