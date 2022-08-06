@@ -50,9 +50,6 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
         .onChange(of: pickerItems) { newValue in
             guard !blocked else {return}
             blocked.toggle()
-            content.append(contentsOf: newValue.map { _ in
-                return Medias.empty
-            })
             newValue.forEach { item in
                 updateState(pickerItem: item)
             }
@@ -64,23 +61,22 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
 @available(iOS 16.0, *)
 private extension MediaSet {
     func updateState(pickerItem: PhotosPickerItem?) {
-        DispatchQueue.global(qos: .userInitiated).async { [self] in
-            Task {
-                guard let pickerItem = pickerItem, let itemIndex = pickerItems.firstIndex(of: pickerItem), let index = content.firstIndex(where: {$0.data == Data()}) else {return}
-                guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {
-                    pickerItems.remove(at: itemIndex)
-                    content.remove(at: index)
-                    DispatchQueue.main.async { [self] in
-                        content.remove(at: index)
-                    }
-                    return
-                }
+        Task {
+            content.append(Medias.empty)
+            guard let pickerItem = pickerItem, let index = content.firstIndex(where: {$0.data == Data()}) else {return}
+            guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {
+                pickerItems.removeAll(where: {$0 == pickerItem})
+                content.remove(at: index)
                 DispatchQueue.main.async { [self] in
-                    content[index].data = image
+                    content.remove(at: index)
                 }
-                pickerItems.remove(at: itemIndex)
-                blocked = !pickerItems.isEmpty
+                return
             }
+            DispatchQueue.main.async { [self] in
+                content[index].data = image
+            }
+            pickerItems.removeAll(where: {$0 == pickerItem})
+            blocked = !pickerItems.isEmpty
         }
     }
     init(isPresented: Binding<Bool>, content: Binding<[Medias]>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, contentForItem: ((Medias, Int) -> Content)?, contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?) {
