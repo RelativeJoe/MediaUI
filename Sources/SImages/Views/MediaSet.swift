@@ -61,20 +61,24 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
 @available(iOS 16.0, *)
 private extension MediaSet {
     func updateState(pickerItem: PhotosPickerItem?) {
-        guard let pickerItem = pickerItem else {return}
-        Task {
-            guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {
-                pickerItems.removeAll(where: {$0 == pickerItem})
-                guard let index = content.firstIndex(where: {$0 == .empty}) else {return}
-                content.remove(at: index)
-                return
+        DispatchQueue.global(qos: .userInitiated).async { [self] in
+            guard let pickerItem = pickerItem else {return}
+            Task {
+                guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {
+                    pickerItems.removeAll(where: {$0 == pickerItem})
+                    guard let index = content.firstIndex(where: {$0 == .empty}) else {return}
+                    DispatchQueue.main.async { [self] in
+                        content.remove(at: index)
+                    }
+                    return
+                }
+                DispatchQueue.main.async { [self] in
+                    guard let index = content.firstIndex(where: {$0 == .empty}) else {return}
+                    content[index].data = image
+                }
             }
-            DispatchQueue.main.async { [self] in
-                guard let index = content.firstIndex(where: {$0 == .empty}) else {return}
-                content[index].data = image
-            }
+            pickerItems.removeAll(where: {$0 == pickerItem})
         }
-        pickerItems.removeAll(where: {$0 == pickerItem})
     }
     init(isPresented: Binding<Bool>, content: Binding<[Medias]>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, contentForItem: ((Medias, Int) -> Content)?, contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?) {
         self._isPresented = isPresented
