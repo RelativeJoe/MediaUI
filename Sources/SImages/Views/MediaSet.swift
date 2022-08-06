@@ -75,13 +75,11 @@ private extension MediaSet {
                 }
                 return
             }
-            DispatchQueue.main.async { [self] in
-                if let index = content.firstIndex(where: {$0.data == Data()}) {
-                    content[index].data = image
-                }
-                pickerItems.removeAll(where: {$0 == pickerItem})
-                blocked = !pickerItems.isEmpty
+            if let index = content.firstIndex(where: {$0.data == Data()}) {
+                content[index].data = image
             }
+            pickerItems.removeAll(where: {$0 == pickerItem})
+            blocked = !pickerItems.isEmpty
         }
     }
     init(isPresented: Binding<Bool>, content: Binding<[Medias]>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, contentForItem: ((Medias, Int) -> Content)?, contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?) {
