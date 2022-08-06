@@ -35,19 +35,20 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
     }
     public var body: some View {
         Group {
-            Color.clear
-                .photosPicker(isPresented: $isPresented, selection: $pickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
-                .onChange(of: pickerItems) { newValue in
-                    newValue.forEach { item in
-                        updateState(pickerItem: item)
-                    }
-                }
+            if content.isEmpty {
+                Color.clear
+            }
             ForEach(Array(content.enumerated()), id: \.element) { index, item in
                 if item == .empty {
                     ProgressView()
                 }else {
                     contentForMedia?(DownsampledImage<Text>(image: .binding($content[index].data.unImage)), item, index)
                 }
+            }
+        }.photosPicker(isPresented: $isPresented, selection: $pickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
+        .onChange(of: pickerItems) { newValue in
+            newValue.forEach { item in
+                updateState(pickerItem: item)
             }
         }
     }
@@ -58,10 +59,10 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
 private extension MediaSet {
     func updateState(pickerItem: PhotosPickerItem?) {
         guard let pickerItem = pickerItem else {return}
+        DispatchQueue.main.async { [self] in
+            content.append(Medias.empty)
+        }
         Task {
-            DispatchQueue.main.async { [self] in
-                content.append(Medias.empty)
-            }
             guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {return}
             DispatchQueue.main.async { [self] in
                 guard let index = content.firstIndex(where: {$0 == .empty}) else {return}
