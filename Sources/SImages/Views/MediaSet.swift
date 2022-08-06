@@ -43,7 +43,11 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
                     }
                 }
             ForEach(Array(content.enumerated()), id: \.element) { index, item in
-                contentForMedia?(DownsampledImage<Text>(image: .binding($content[index].data.unImage)), item, index)
+                if item == .empty {
+                    ProgressView()
+                }else {
+                    contentForMedia?(DownsampledImage<Text>(image: .binding($content[index].data.unImage)), item, index)
+                }
             }
         }
     }
@@ -55,13 +59,15 @@ private extension MediaSet {
     func updateState(pickerItem: PhotosPickerItem?) {
         guard let pickerItem = pickerItem else {return}
         Task {
+            DispatchQueue.main.async { [self] in
+                content.append(Medias.empty)
+            }
             guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {return}
             DispatchQueue.main.async { [self] in
-                withAnimation() {
-                    var media = Medias.empty
-                    media.data = image
-                    content.append(media)
-                }
+                content.removeLast()
+                var media = Medias.empty
+                media.data = image
+                content.append(media)
             }
         }
     }
