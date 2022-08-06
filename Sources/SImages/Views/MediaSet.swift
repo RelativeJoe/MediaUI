@@ -49,7 +49,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
         }.photosPicker(isPresented: $isPresented, selection: $bindingPickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
         .onChange(of: bindingPickerItems) { newValue in
             guard !newValue.isEmpty else {return}
-            pickerItems = bindingPickerItems
+            pickerItems = newValue
             pickerItems.forEach { _ in
                 content.append(Medias.empty)
             }
