@@ -49,6 +49,9 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
         }.photosPicker(isPresented: $isPresented, selection: $pickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
         .onChange(of: pickerItems) { newValue in
             guard !blocked else {return}
+            newValue.forEach { _ in
+                content.append(Medias.empty)
+            }
             blocked.toggle()
             newValue.forEach { item in
                 updateState(pickerItem: item)
@@ -61,26 +64,23 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
 @available(iOS 16.0, *)
 private extension MediaSet {
     func updateState(pickerItem: PhotosPickerItem?) {
-            content.append(Medias.empty)
-        DispatchQueue.global(qos: .userInitiated).async {
-            Task {
-                guard let pickerItem = pickerItem else {return}
-                guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {
-                    pickerItems.removeAll(where: {$0 == pickerItem})
-                    if let index = content.firstIndex(where: {$0.data == Data()}) {
-                        DispatchQueue.main.async { [self] in
-                            content.remove(at: index)
-                        }
+        Task {
+            guard let pickerItem = pickerItem else {return}
+            guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {
+                pickerItems.removeAll(where: {$0 == pickerItem})
+                if let index = content.firstIndex(where: {$0.data == Data()}) {
+                    DispatchQueue.main.async { [self] in
+                        content.remove(at: index)
                     }
-                    return
                 }
-                DispatchQueue.main.async { [self] in
-                    if let index = content.firstIndex(where: {$0.data == Data()}) {
-                        content[index].data = image
-                    }
-                    pickerItems.removeAll(where: {$0 == pickerItem})
-                    blocked = !pickerItems.isEmpty
+                return
+            }
+            DispatchQueue.main.async { [self] in
+                if let index = content.firstIndex(where: {$0.data == Data()}) {
+                    content[index].data = image
                 }
+                pickerItems.removeAll(where: {$0 == pickerItem})
+                blocked = !pickerItems.isEmpty
             }
         }
     }
