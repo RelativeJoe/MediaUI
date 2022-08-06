@@ -64,7 +64,8 @@ private extension MediaSet {
             }
             guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {return}
             DispatchQueue.main.async { [self] in
-                content.removeLast()
+                guard let index = content.firstIndex(where: {$0 == .empty}) else {return}
+                content.remove(at: index)
                 var media = Medias.empty
                 media.data = image
                 content.append(media)
