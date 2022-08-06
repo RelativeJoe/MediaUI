@@ -39,17 +39,19 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
             if content.isEmpty {
                 Color.clear
             }
-            ForEach(Array(content.enumerated()), id: \.element) { index, item in
+            ForEach(Array(content.enumerated()), id: \.element.id) { index, item in
                 if item.data == Data() {
-                     ProgressView()
+                    Color.accentColor
                 }else {
                     contentForMedia?(DownsampledImage<Text>(image: .binding($content[index].data.unImage)), item, index)
                 }
             }
         }.photosPicker(isPresented: $isPresented, selection: $pickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
         .onChange(of: pickerItems) { newValue in
-            blocked = !pickerItems.isEmpty
-            guard !blocked else {return}
+            guard !blocked else {
+                blocked = !newValue.isEmpty
+                return
+            }
             newValue.forEach { _ in
                 content.append(Medias.empty)
             }
