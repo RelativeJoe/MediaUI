@@ -63,17 +63,20 @@ private extension MediaSet {
     func updateState(pickerItem: PhotosPickerItem?) {
         Task {
             content.append(Medias.empty)
-            guard let pickerItem = pickerItem, let index = content.firstIndex(where: {$0.data == Data()}) else {return}
+            guard let pickerItem = pickerItem else {return}
             guard let image = try? await pickerItem.loadTransferable(type: Data.self) else {
                 pickerItems.removeAll(where: {$0 == pickerItem})
-                content.remove(at: index)
-                DispatchQueue.main.async { [self] in
-                    content.remove(at: index)
+                if let index = content.firstIndex(where: {$0.data == Data()}) {
+                    DispatchQueue.main.async { [self] in
+                        content.remove(at: index)
+                    }
                 }
                 return
             }
             DispatchQueue.main.async { [self] in
-                content[index].data = image
+                if let index = content.firstIndex(where: {$0.data == Data()}) {
+                    content[index].data = image
+                }
             }
             pickerItems.removeAll(where: {$0 == pickerItem})
             blocked = !pickerItems.isEmpty
