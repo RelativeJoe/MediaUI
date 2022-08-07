@@ -20,6 +20,11 @@ struct PhotosPickerIDKey: EnvironmentKey {
 }
 
 @available(iOS 16.0, *)
+struct PhotosPickerPresentingIDKey: EnvironmentKey {
+    static let defaultValue = ""
+}
+
+@available(iOS 16.0, *)
 extension EnvironmentValues {
     var configurations: PhotosPickerConfigurations? {
         get {
@@ -37,6 +42,14 @@ extension EnvironmentValues {
             self[PhotosPickerIDKey.self] = newValue
         }
     }
+    var photosPickerPresentingId: String {
+        get {
+            self[PhotosPickerPresentingIDKey.self]
+        }
+        set {
+            self[PhotosPickerPresentingIDKey.self] = newValue
+        }
+    }
 }
 
 @available(iOS 16.0, *)
@@ -45,10 +58,9 @@ public extension View {
         self.modifier(PhotosPickerConfigurationsModifer())
     }
     @ViewBuilder func photosPickerId<Value: CustomStringConvertible>(_ id: Value, isPresented: Binding<Bool>) -> some View {
+        environment(\.photosPickerId, id.description)
         if isPresented.wrappedValue {
-            environment(\.photosPickerId, id.description)
-        }else {
-            self
+            environment(\.photosPickerPresentingId, id.description)
         }
     }
 }

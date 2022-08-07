@@ -13,6 +13,7 @@ import PhotosUI
 struct MultiPhotosPicker: ViewModifier {
     @EnvironmentObject var configurations: PhotosPickerConfigurations
     @Environment(\.photosPickerId) private var id
+    @Environment(\.photosPickerPresentingId) private var presentingId
     @Binding public var isPresented: Bool
     let filter: PHPickerFilter?
     let encoding: PhotosPickerItem.EncodingDisambiguationPolicy
@@ -34,7 +35,7 @@ struct MultiPhotosPicker: ViewModifier {
         }.onDisappear {
             configurations.id = ""
         }.onChange(of: isPresented) { newValue in
-            configurations.currentlyPicking = newValue ? id: ""
+            configurations.currentlyPicking = newValue ? presentingId: ""
         }.onChange(of: configurations.isPresented) { newValue in
             guard isPresented != newValue else {return}
             isPresented = newValue
