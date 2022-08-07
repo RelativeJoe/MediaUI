@@ -38,14 +38,14 @@ struct MultiPhotosPicker: ViewModifier {
             }
         }.onChange(of: isPresented) { newValue in
             configurations?.currentlyPicking = newValue ? id: ""
-        }.onChange(of: configurations!.isPresented) { newValue in
+        }.onReceive(configurations!.$isPresented) { newValue in
             print(newValue)
             guard newValue != configurationsPresentation else {return}
             configurationsPresentation = newValue
         }.onChange(of: configurationsPresentation) { newValue in
             guard newValue != configurations!.isPresented else {return}
             configurations!.isPresented = newValue
-        }.onChange(of: configurations!.bindingPickerItems) { newValue in
+        }.onReceive(configurations!.$bindingPickerItems) { newValue in
             guard newValue != configurationsBindingPickerItems else {return}
             configurationsBindingPickerItems = newValue
         }.onChange(of: configurationsBindingPickerItems) { newValue in
