@@ -33,7 +33,7 @@ struct PhotoPickerItemModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .onChange(of: configurations.pickerItems) { newValuey in
-                guard let newValue = newValuey[PhotosPickerID.mediaSet.rawValue], !newValue.isEmpty else {return}
+                guard let newValue = newValuey[id], !newValue.isEmpty else {return}
                 singleAction?(newValue.first)
                 action?(newValue)
                 configurations.pickerItems[id]?.removeAll()
