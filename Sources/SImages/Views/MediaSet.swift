@@ -50,7 +50,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
                     contentForMedia?(DownsampledImage<Text>(image: .binding($content[index].data.unImage)), item, index)
                 }
             }
-        }.photosPicker(isPresented: $isPresented, selection: $bindingPickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
+        }.multiPhotosPicker(isPresented: $isPresented, selection: $bindingPickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
         .onChange(of: bindingPickerItems) { newValue in
             guard !newValue.isEmpty else {return}
             pickerItems = newValue
@@ -127,6 +127,51 @@ public extension MediaSet {
 ///MediaSet: Assing the MediaImage to be displayed for each of the picked Photos
     func content(@ViewBuilder contentForMedia: @escaping (DownsampledImage<Text>, Medias, Int) -> Content) -> Self {
         MediaSet(isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
+    }
+}
+
+@available(iOS 16.0, *)
+final class PhotosPickerConfigurations: ObservableObject {
+    static var shared = PhotosPickerConfigurations()
+    @Published var isPresented = false
+    @Published var bindingPickerItems = [PhotosPickerItem]()
+    @Published var filter: PHPickerFilter?
+    @Published var encoding = PhotosPickerItem.EncodingDisambiguationPolicy.automatic
+    @Published var maxSelectionCount: Int?
+    @Published var behavior = PhotosPickerSelectionBehavior.default
+    @Published var library = PHPhotoLibrary.shared()
+    @Published var attached = false
+}
+
+@available(iOS 16.0, *)
+struct MultiPhotosPicker: ViewModifier {
+    @ObservedObject var configurations = PhotosPickerConfigurations.shared
+    @Binding var isPresented: Bool
+    @Binding var pickerItems: [PhotosPickerItem]
+    let filter: PHPickerFilter?
+    let encoding: PhotosPickerItem.EncodingDisambiguationPolicy
+    let maxSelectionCount: Int?
+    let behavior: PhotosPickerSelectionBehavior
+    let library: PHPhotoLibrary
+    func body(content: Content) -> some View {
+        if !isPresented {
+            content
+        }else {
+            content
+                .photosPicker(isPresented: $isPresented, selection: $pickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
+                .onAppear {
+                    configurations.attached = true
+                }.onDisappear {
+                    configurations.attached = false
+                }
+        }
+    }
+}
+
+@available(iOS 16.0, *)
+extension View {
+    func multiPhotosPicker(isPresented: Binding<Bool>, selection: Binding<[PhotosPickerItem]>, maxSelectionCount: Int? = nil, selectionBehavior: PhotosPickerSelectionBehavior = .default, matching filter: PHPickerFilter? = nil, preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic, photoLibrary: PHPhotoLibrary) -> some View {
+        self.modifier(MultiPhotosPicker(isPresented: isPresented, pickerItems: selection, filter: filter, encoding: preferredItemEncoding, maxSelectionCount: maxSelectionCount, behavior: selectionBehavior, library: photoLibrary))
     }
 }
 #endif
