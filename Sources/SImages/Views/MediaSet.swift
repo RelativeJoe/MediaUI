@@ -13,9 +13,9 @@ import PhotosUI
 //MARK: - Public Initializer
 @available(iOS 16.0, *)
 public struct MediaSet<Medias: Mediabley, Content: View>: View {
+    @ObservedObject private var configurations = PhotosPickerConfigurations.shared
     @Binding private var isPresented: Bool
     @State private var pickerItems = [PhotosPickerItem]()
-    @State private var bindingPickerItems = [PhotosPickerItem]()
     @Binding private var content: [Medias]
     private let filter: PHPickerFilter?
     private let encoding: PhotosPickerItem.EncodingDisambiguationPolicy
@@ -50,9 +50,11 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
                     contentForMedia?(DownsampledImage<Text>(image: .binding($content[index].data.unImage)), item, index)
                 }
             }
-        }.multiPhotosPicker(isPresented: $isPresented, selection: $bindingPickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
-        .onChange(of: bindingPickerItems) { newValue in
-            guard !newValue.isEmpty else {return}
+        }.multiPhotosPicker(maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library, id: PhotosPickerID.mediaSet.rawValue)
+        .onChange(of: isPresented) { newValue in
+            configurations.currentlyPicking = newValue ? PhotosPickerID.mediaSet.rawValue: ""
+        }.onChange(of: configurations.pickerItems) { newValuey in
+            guard let newValue = newValuey[PhotosPickerID.mediaSet.rawValue], !newValue.isEmpty else {return}
             pickerItems = newValue
             pickerItems.forEach { _ in
                 content.append(Medias.empty)
@@ -60,7 +62,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
             pickerItems.forEach { item in
                 updateState(pickerItem: item)
             }
-            bindingPickerItems.removeAll()
+            configurations.pickerItems[PhotosPickerID.mediaSet.rawValue]?.removeAll()
         }
     }
 }
@@ -134,44 +136,57 @@ public extension MediaSet {
 final class PhotosPickerConfigurations: ObservableObject {
     static var shared = PhotosPickerConfigurations()
     @Published var isPresented = false
-    @Published var bindingPickerItems = [PhotosPickerItem]()
-    @Published var filter: PHPickerFilter?
-    @Published var encoding = PhotosPickerItem.EncodingDisambiguationPolicy.automatic
-    @Published var maxSelectionCount: Int?
-    @Published var behavior = PhotosPickerSelectionBehavior.default
-    @Published var library = PHPhotoLibrary.shared()
-    @Published var attached = false
+    @Published var pickerItems = [String: [PhotosPickerItem]]()
+    @Published var bindingPickerItems = [PhotosPickerItem]() {
+        didSet {
+            guard !bindingPickerItems.isEmpty else {return}
+            pickerItems[currentlyPicking] = bindingPickerItems
+            bindingPickerItems.removeAll()
+            currentlyPicking = ""
+        }
+    }
+    @Published var id = ""
+    @Published var currentlyPicking = "" {
+        didSet {
+            isPresented = !currentlyPicking.isEmpty
+        }
+    }
 }
 
 @available(iOS 16.0, *)
 struct MultiPhotosPicker: ViewModifier {
     @ObservedObject var configurations = PhotosPickerConfigurations.shared
-    @Binding var isPresented: Bool
-    @Binding var pickerItems: [PhotosPickerItem]
     let filter: PHPickerFilter?
     let encoding: PhotosPickerItem.EncodingDisambiguationPolicy
     let maxSelectionCount: Int?
     let behavior: PhotosPickerSelectionBehavior
     let library: PHPhotoLibrary
+    let id: String
     func body(content: Content) -> some View {
-        if !isPresented {
+        if configurations.id == id || configurations.id.isEmpty {
             content
+                .photosPicker(isPresented: $configurations.isPresented, selection: $configurations.bindingPickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
+                .onAppear {
+                    if configurations.id.isEmpty {
+                        configurations.id = id
+                    }
+                }.onDisappear {
+                    configurations.id = ""
+                }
         }else {
             content
-                .photosPicker(isPresented: $isPresented, selection: $pickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
-                .onAppear {
-                    configurations.attached = true
-                }.onDisappear {
-                    configurations.attached = false
-                }
         }
     }
 }
 
 @available(iOS 16.0, *)
 extension View {
-    func multiPhotosPicker(isPresented: Binding<Bool>, selection: Binding<[PhotosPickerItem]>, maxSelectionCount: Int? = nil, selectionBehavior: PhotosPickerSelectionBehavior = .default, matching filter: PHPickerFilter? = nil, preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic, photoLibrary: PHPhotoLibrary) -> some View {
-        self.modifier(MultiPhotosPicker(isPresented: isPresented, pickerItems: selection, filter: filter, encoding: preferredItemEncoding, maxSelectionCount: maxSelectionCount, behavior: selectionBehavior, library: photoLibrary))
+    @ViewBuilder func multiPhotosPicker(maxSelectionCount: Int? = nil, selectionBehavior: PhotosPickerSelectionBehavior = .default, matching filter: PHPickerFilter? = nil, preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic, photoLibrary: PHPhotoLibrary, id: String) -> some View {
+        self.modifier(MultiPhotosPicker(filter: filter, encoding: preferredItemEncoding, maxSelectionCount: maxSelectionCount, behavior: selectionBehavior, library: photoLibrary, id: id))
     }
 }
 #endif
+
+enum PhotosPickerID: String, RawRepresentable {
+    case mediaImage, mediaSet
+}
