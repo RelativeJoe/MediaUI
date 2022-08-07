@@ -12,13 +12,11 @@ import PhotosUI
 @available(iOS 16.0, *)
 final class PhotosPickerConfigurations: ObservableObject {
     @Published var isPresented = false
-    @Published var pickerItem = [String: PhotosPickerItem?]()
     @Published var pickerItems = [String: [PhotosPickerItem]]()
     @Published var bindingPickerItems = [PhotosPickerItem]() {
         didSet {
             guard !bindingPickerItems.isEmpty else {return}
             pickerItems[currentlyPicking] = bindingPickerItems
-            pickerItem[currentlyPicking] = bindingPickerItems.first
             bindingPickerItems.removeAll()
             currentlyPicking = ""
         }
