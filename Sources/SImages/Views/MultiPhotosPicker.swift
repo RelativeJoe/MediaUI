@@ -24,7 +24,7 @@ public struct MultiPhotosPicker<Content: View>: View {
         Group {
             if configurations.id == id || configurations.id.isEmpty {
                 content
-                    .photosPicker(isPresented: $configurations.isPresented, selection: $configurations.bindingPickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
+                    .photosPicker(isPresented: $configurations.isPresented, selection: $configurations.bindingPickerItems, maxSelectionCount: 1, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
             }else {
                 content
             }
