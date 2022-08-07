@@ -7,7 +7,7 @@
 import SwiftUI
 import STools
 
-//MARK: - Public Initializer
+///SImages: A DownsampledImage is a View that displays an Image in a Downsampled style.
 public struct DownsampledImage<Content: View>: View {
     @Binding private var height: CGFloat?
     @Binding private var oldImage: UNImage?
@@ -38,7 +38,7 @@ public struct DownsampledImage<Content: View>: View {
 
 //MARK: - Public Initializer
 public extension DownsampledImage {
-    ///DownsampledImage: A DownsampledImage is a View that displays an Image in a Downsampled style.
+///SImages: Initialize a DownsampledImage from a UNImage, or a Binding one.
     init(image: AnyBinding<UNImage>) {
         self._oldImage = image.value
         self._height = .constant(nil)

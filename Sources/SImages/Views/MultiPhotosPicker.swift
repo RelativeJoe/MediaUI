@@ -46,11 +46,11 @@ public struct MultiPhotosPicker<Content: View>: View {
 //MARK: - Public Functions
 @available(iOS 16.0, *)
 public extension MultiPhotosPicker {
-///SImages: Listen to the changes for multiple photo selection
+///MultiPhotosPicker: Listen to the changes for multiple photo selection
     @ViewBuilder func pickerItems(_ action: @escaping ([PhotosPickerItem]) -> Void) -> some View {
         self.privatePickerItems(id: id, action: action)
     }
-///SImages: Listen to the changes for single photo selection
+///MultiPhotosPicker: Listen to the changes for single photo selection
     @ViewBuilder func pickerItem(_ action: @escaping (PhotosPickerItem?) -> Void) -> some View {
         self.privatePickerItem(id: id, action: action)
     }

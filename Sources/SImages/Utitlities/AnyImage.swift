@@ -8,15 +8,13 @@
 import SwiftUI
 import STools
 
+///SImages: Type erased Image.
 public struct AnyImage: View {
 //MARK: - Properties
     public static var empty = AnyImage()
     public var data: Data?
     public var image: Image?
     public var unImage: UNImage?
-//MARK: - Private Initializers
-    private init() {
-    }
     public var body: some View {
         image ?? Image("photo.fill")
     }
@@ -24,6 +22,7 @@ public struct AnyImage: View {
 
 //MARK: - Public Initializers
 public extension AnyImage {
+///SImages: Craetes Image, UNImage & View from some Data.
     init(_ data: Data?) {
         guard let data = data else {return}
         self.data = data
@@ -34,12 +33,14 @@ public extension AnyImage {
             self.image = nil
         }
     }
+///SImages: Creates Data, UNImage & View from an Image.
     init(_ image: Image?) {
         guard let image = image else {return}
         self.image = image
         self.unImage = image.unImage
         self.data = unImage?.asData(.high)
     }
+///SImages: Creates Data, Image & View from an UNImage.
     init(_ unImage: UNImage?) {
         guard let unImage = unImage else {return}
         self.unImage = unImage

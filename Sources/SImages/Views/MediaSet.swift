@@ -10,7 +10,7 @@
 import SwiftUI
 import PhotosUI
 
-//MARK: - Public Initializer
+///SImages: A MediaSet is a collection of Photos picked by the user. You can place it inside an HStack, VStack, LazyVGrid, LazyHGrid...
 @available(iOS 16.0, *)
 public struct MediaSet<Medias: Mediabley, Content: View>: View {
     @EnvironmentObject private var configurations: PhotosPickerConfigurations
@@ -72,7 +72,7 @@ private extension MediaSet {
 //MARK: - Public Initializer
 @available(iOS 16.0, *)
 extension MediaSet {
-///MediaSet: A MediaSet is a collection of Photos picked by the user. You can place it inside an HStack, VStack, LazyVGrid, LazyHGrid...
+///SImages: Initialize a MediaSet.
     public init(isPresented: Binding<Bool>, content: Binding<[Medias]>) {
         self._isPresented = isPresented
         self._content = content
