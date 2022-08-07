@@ -11,7 +11,6 @@ import PhotosUI
 #if canImport(Charts)
 @available(iOS 16.0, *)
 final class PhotosPickerConfigurations: ObservableObject {
-    static var shared = PhotosPickerConfigurations()
     @Published var isPresented = false
     @Published var pickerItems = [String: [PhotosPickerItem]]()
     @Published var bindingPickerItems = [PhotosPickerItem]() {
