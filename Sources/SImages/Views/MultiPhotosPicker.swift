@@ -35,6 +35,7 @@ public struct MultiPhotosPicker<Content: View>: View {
         }.onDisappear {
             configurations.id = ""
         }.onChange(of: isPresented) { newValue in
+            guard isPresented != configurations.isPresented else {return}
             configurations.currentlyPicking = newValue ? id: ""
         }.onChange(of: configurations.isPresented) { newValue in
             guard isPresented != configurations.isPresented else {return}
