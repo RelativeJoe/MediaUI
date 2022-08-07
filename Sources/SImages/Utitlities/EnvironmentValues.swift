@@ -40,7 +40,7 @@ extension EnvironmentValues {
 }
 
 @available(iOS 16.0, *)
-extension View {
+public extension View {
     func photosPickerConfigurations() -> some View {
         environment(\.configurations, PhotosPickerConfigurations())
     }

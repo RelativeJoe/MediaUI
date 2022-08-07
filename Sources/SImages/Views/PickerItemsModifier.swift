@@ -10,7 +10,7 @@ import PhotosUI
 
 #if canImport(Charts)
 @available(iOS 16.0, *)
-extension View {
+public extension View {
     @ViewBuilder func pickerItems(_ action: @escaping ([PhotosPickerItem]) -> Void) -> some View {
         self.modifier(PhotoPickerItemModifier(action: action))
     }
