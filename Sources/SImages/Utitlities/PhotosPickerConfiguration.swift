@@ -29,7 +29,3 @@ final internal class PhotosPickerConfigurations: ObservableObject {
     }
 }
 #endif
-
-internal enum PhotosPickerID: String, RawRepresentable {
-    case mediaImage, mediaSet
-}

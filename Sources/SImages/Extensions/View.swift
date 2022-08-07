@@ -24,8 +24,8 @@ internal extension View {
 @available(iOS 16.0, *)
 public extension View {
 ///SImages: Add multiple PhotosPicker in this view
-    @ViewBuilder func multiPhotosPicker(id: CustomStringConvertible, isPresented: Binding<Bool>, maxSelectionCount: Int? = nil, selectionBehavior: PhotosPickerSelectionBehavior = .default, matching filter: PHPickerFilter? = nil, preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic, photoLibrary: PHPhotoLibrary = .shared()) -> MultiPhotosPicker<Self> {
-        MultiPhotosPicker(id: id.description, isPresented: isPresented, filter: filter, encoding: preferredItemEncoding, maxSelectionCount: maxSelectionCount, behavior: selectionBehavior, library: photoLibrary, content: self)
+    @ViewBuilder func multiPhotosPicker(id: String, isPresented: Binding<Bool>, maxSelectionCount: Int? = nil, selectionBehavior: PhotosPickerSelectionBehavior = .default, matching filter: PHPickerFilter? = nil, preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic, photoLibrary: PHPhotoLibrary = .shared()) -> MultiPhotosPicker<Self> {
+        MultiPhotosPicker(id: id, isPresented: isPresented, filter: filter, encoding: preferredItemEncoding, maxSelectionCount: maxSelectionCount, behavior: selectionBehavior, library: photoLibrary, content: self)
     }
 ///SImages: Enables multiple PhotosPicker in this view
     @ViewBuilder func photosPickerConfigurations() -> some View {
