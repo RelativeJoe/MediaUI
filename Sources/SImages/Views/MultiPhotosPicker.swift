@@ -24,16 +24,15 @@ struct MultiPhotosPicker: ViewModifier {
             if configurations.id == id || configurations.id.isEmpty {
                 content
                     .photosPicker(isPresented: $configurations.isPresented, selection: $configurations.bindingPickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
-                    .onAppear {
-                        if configurations.id.isEmpty {
-                            configurations.id = id
-                        }
-                    }.onDisappear {
-                        configurations.id = ""
-                    }
             }else {
                 content
             }
+        }.onAppear {
+            if configurations.id.isEmpty {
+                configurations.id = id
+            }
+        }.onDisappear {
+            configurations.id = ""
         }.onChange(of: isPresented) { newValue in
             configurations.currentlyPicking = newValue ? id: ""
         }
