@@ -13,7 +13,7 @@ import PhotosUI
 struct MultiPhotosPicker: ViewModifier {
     @Environment(\.configurations) private var configurations
     @Environment(\.photosPickerId) private var id
-    @Binding var isPresented: Bool
+    @Binding public var isPresented: Bool
     @State private var configurationsBindingPickerItems = [PhotosPickerItem]()
     @State private var configurationsPresentation = false
     let filter: PHPickerFilter?
