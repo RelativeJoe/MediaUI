@@ -24,7 +24,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
     private let library: PHPhotoLibrary
     private var contentForLoading: (() -> Content)?
     private var contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?
-    let id = UUID().uuidString
+    private let id: String
     public var body: some View {
         Group {
             if content.isEmpty {
@@ -57,7 +57,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
 //MARK: - Private Initializer
 @available(iOS 16.0, *)
 private extension MediaSet {
-    init(_ isPresented: Binding<Bool>, content: Binding<[Medias]>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, contentForLoading: (() -> Content)?, contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?) {
+    init(_ id: String, isPresented: Binding<Bool>, content: Binding<[Medias]>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, contentForLoading: (() -> Content)?, contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?) {
         self._isPresented = isPresented
         self._content = content
         self.filter = filter
@@ -67,6 +67,7 @@ private extension MediaSet {
         self.library = library
         self.contentForLoading = contentForLoading
         self.contentForMedia = contentForMedia
+        self.id = id
     }
 }
 
@@ -81,6 +82,7 @@ extension MediaSet {
         self.encoding = .automatic
         self.maxSelectionCount = nil
         self.behavior = .default
+        self.id = UUID().uuidString
         self.library = PHPhotoLibrary.shared()
     }
 }
@@ -109,33 +111,37 @@ private extension MediaSet {
 //MARK: - Public Modifiers
 @available(iOS 16.0, *)
 public extension MediaSet {
-///Assign a filter/some filters to the PhotosPicker
+///Assign a filter/some filters to the PhotosPicker.
     func filter(by filter: PHPickerFilter?) -> Self {
-        MediaSet($isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
+        MediaSet(id, isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
     }
-///MediaSet: Assing an encoding to the PhotosPicker's picked Photos
+///MediaSet: Assing an encoding to the PhotosPicker's picked Photos.
     func encode(using encoding: PhotosPickerItem.EncodingDisambiguationPolicy) -> Self {
-        MediaSet($isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
+        MediaSet(id, isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
     }
-///MediaSet: Assing the maximum amount of Photos for the user to pick
+///MediaSet: Assing the maximum amount of Photos for the user to pick.
     func maxSelection(_ maxSelectionCount: Int?) -> Self {
-        MediaSet($isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
+        MediaSet(id, isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
     }
-///MediaSet: Assing the behavior to the PhotosPicker
+///MediaSet: Assing the behavior to the PhotosPicker.
     func selection(behavior: PhotosPickerSelectionBehavior) -> Self {
-        MediaSet($isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
+        MediaSet(id, isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
     }
-///MediaSet: Assing the Libray of the PhotosPicker
+///MediaSet: Assing the Libray of the PhotosPicker.
     func using(library: PHPhotoLibrary) -> Self {
-        MediaSet($isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
+        MediaSet(id, isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
     }
-///MediaSet: Assing the content to be displayed for each of the picked Photos
+///MediaSet: Assing the content to be displayed for each of the picked Photos.
     func loading(@ViewBuilder contentForLoading: @escaping () -> Content) -> Self {
-        MediaSet($isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
+        MediaSet(id, isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
     }
-///MediaSet: Assing the MediaImage to be displayed for each of the picked Photos
+///MediaSet: Assing the MediaImage to be displayed for each of the picked Photos.
     func content(@ViewBuilder contentForMedia: @escaping (DownsampledImage<Text>, Medias, Int) -> Content) -> Self {
-        MediaSet($isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
+        MediaSet(id, isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
+    }
+///MediaSet: Set the PhotosPicker id of the view.
+    func set(id: CustomStringConvertible) -> Self {
+        MediaSet(id.description, isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
     }
 }
 #endif

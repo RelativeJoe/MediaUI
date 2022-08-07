@@ -81,31 +81,31 @@ private extension DownsampledImage {
 public extension DownsampledImage {
 ///DownsampledImage: Make the Image take the Shape of a square.
     func squaredImage() -> Self {
-        return DownsampledImage(image: .binding($oldImage), height: .binding($height), width: .binding($width), squared: true, aspectRatio: aspectRatio, resizable: resizable) {
+        DownsampledImage(image: .binding($oldImage), height: .binding($height), width: .binding($width), squared: true, aspectRatio: aspectRatio, resizable: resizable) {
             placeHolder
         }
     }
 ///DownsampledImage: Sets the mode by which SwiftUI resizes an Image to fit it's space.
     func isResizable() -> Self {
-        return DownsampledImage(image: .binding($oldImage), height: .binding($height), width: .binding($width), squared: squared, aspectRatio: aspectRatio, resizable: true) {
+        DownsampledImage(image: .binding($oldImage), height: .binding($height), width: .binding($width), squared: squared, aspectRatio: aspectRatio, resizable: true) {
             placeHolder
         }
     }
 ///DownsampledImage: Constrains this View's dimesnions to the specified aspect rario.
     func aspect(_ ratio: CGFloat? = nil, contentMode: ContentMode) -> Self {
-        return DownsampledImage(image: .binding($oldImage), height: .binding($height), width: .binding($width), squared: squared, aspectRatio: (ratio, contentMode), resizable: resizable) {
+        DownsampledImage(image: .binding($oldImage), height: .binding($height), width: .binding($width), squared: squared, aspectRatio: (ratio, contentMode), resizable: resizable) {
             placeHolder
         }
     }
 ///DownsampledImage: Positions this View within an invisible frame with the specified size.
     func frame(width: AnyBinding<CGFloat> = .wrapped(nil), height: AnyBinding<CGFloat> = .wrapped(nil)) -> Self  {
-        return DownsampledImage(image: .binding($oldImage), height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable) {
+        DownsampledImage(image: .binding($oldImage), height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable) {
             placeHolder
         }
     }
 ///DownsampledImage: Adds a placeholder View if no Image can be displayed.
     func placeHolder(@ViewBuilder placeholder: () -> Content) -> Self {
-        return DownsampledImage(image: .binding($oldImage), height: .binding($height), width: .binding($width), squared: squared, aspectRatio: aspectRatio, resizable: resizable) {
+        DownsampledImage(image: .binding($oldImage), height: .binding($height), width: .binding($width), squared: squared, aspectRatio: aspectRatio, resizable: resizable) {
             placeholder()
         }
     }
