@@ -12,6 +12,7 @@ import STools
 //MARK: - Public Initializer
 @available(iOS 16.0, macOS 13.0, *)
 public struct MediaImage<Content: View, Media: Mediabley>: View {
+    @EnvironmentObject var configurations: PhotosPickerConfigurations
     @Binding private var height: CGFloat?
     @Binding private var mediable: Media
     @Binding private var width: CGFloat?
@@ -51,10 +52,10 @@ public struct MediaImage<Content: View, Media: Mediabley>: View {
                 }
             }
         }.disabled(disabledPicker)
-        .photosPicker(isPresented: $presentable.isPresented, selection: $presentable.pickerItem, matching: .images)
-        .onChange(of: presentable.pickerItem) { newValue in
+        .multiPhotosPicker(isPresented: $presentable.isPresented, matching: .images)
+        .pickerItem { newValue in
             updateState(pickerItem: newValue)
-        }
+        }.photosPickerId(PhotosPickerID.mediaImage.rawValue)
     }
 }
 
