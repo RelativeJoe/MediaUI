@@ -55,6 +55,7 @@ struct PhotosPickerConfigurationsModifer: ViewModifier {
     func body(content: Content) -> some View {
         if configurations == nil {
             content
+                .environment(\.configurations, PhotosPickerConfigurations())
                 .environmentObject(PhotosPickerConfigurations())
         }else {
             content
