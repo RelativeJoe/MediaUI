@@ -41,11 +41,15 @@ extension EnvironmentValues {
 
 @available(iOS 16.0, *)
 public extension View {
-    func photosPickerConfigurations() -> some View {
+    @ViewBuilder func photosPickerConfigurations() -> some View {
         self.modifier(PhotosPickerConfigurationsModifer())
     }
-    func photosPickerId<Value: CustomStringConvertible>(_ id: Value) -> some View {
-        environment(\.photosPickerId, id.description)
+    @ViewBuilder func photosPickerId<Value: CustomStringConvertible>(_ id: Value, isPresented: Binding<Bool>) -> some View {
+        if isPresented.wrappedValue {
+            environment(\.photosPickerId, id.description)
+        }else {
+            self
+        }
     }
 }
 

@@ -55,7 +55,7 @@ public struct MediaImage<Content: View, Media: Mediabley>: View {
         .multiPhotosPicker(isPresented: $presentable.isPresented, matching: .images)
         .pickerItem { newValue in
             updateState(pickerItem: newValue)
-        }.photosPickerId(PhotosPickerID.mediaImage.rawValue)
+        }.photosPickerId(PhotosPickerID.mediaImage.rawValue, isPresented: $presentable.isPresented)
     }
 }
 

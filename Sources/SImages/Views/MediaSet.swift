@@ -59,7 +59,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
             pickerItems.forEach { item in
                 updateState(pickerItem: item)
             }
-        }.photosPickerId(PhotosPickerID.mediaSet.rawValue)
+        }.photosPickerId(PhotosPickerID.mediaSet.rawValue, isPresented: $isPresented)
 //        .onChange(of: configurations.pickerItems) { newValuey in
 //            guard let newValue = newValuey[PhotosPickerID.mediaSet.rawValue], !newValue.isEmpty else {return}
 //            pickerItems = newValue
