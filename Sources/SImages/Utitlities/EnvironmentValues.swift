@@ -11,7 +11,7 @@ import PhotosUI
 #if canImport(Charts)
 @available(iOS 16.0, *)
 struct PhotosPickerConfigurationsKey: EnvironmentKey {
-    static let defaultValue = PhotosPickerConfigurations()
+    static let defaultValue: PhotosPickerConfigurations? = nil
 }
 
 @available(iOS 16.0, *)
@@ -21,7 +21,7 @@ struct PhotosPickerIDKey: EnvironmentKey {
 
 @available(iOS 16.0, *)
 extension EnvironmentValues {
-    var configurations: PhotosPickerConfigurations {
+    var configurations: PhotosPickerConfigurations? {
         get {
             self[PhotosPickerConfigurationsKey.self]
         }

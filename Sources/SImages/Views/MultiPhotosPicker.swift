@@ -23,29 +23,30 @@ struct MultiPhotosPicker: ViewModifier {
     let library: PHPhotoLibrary
     func body(content: Content) -> some View {
         Group {
-            if configurations.id == id || configurations.id.isEmpty {
+            if configurations!.id == id || configurations!.id.isEmpty {
                 content
                     .photosPicker(isPresented: $configurationsPresentation, selection: $configurationsBindingPickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
                     .onAppear {
-                        if configurations.id.isEmpty {
-                            configurations.id = id
+                        if configurations!.id.isEmpty {
+                            configurations!.id = id
                         }
                     }.onDisappear {
-                        configurations.id = ""
+                        configurations!.id = ""
                     }
             }else {
                 content
             }
         }.onChange(of: isPresented) { newValue in
-            configurations.currentlyPicking = newValue ? PhotosPickerID.mediaSet.rawValue: ""
-        }.onChange(of: configurations.isPresented) { newValue in
+            print(configurations)
+            configurations?.currentlyPicking = newValue ? configurations!.id: ""
+        }.onChange(of: configurations!.isPresented) { newValue in
             configurationsPresentation = newValue
         }.onChange(of: configurationsPresentation) { newValue in
-            configurations.isPresented = newValue
-        }.onChange(of: configurations.bindingPickerItems) { newValue in
+            configurations!.isPresented = newValue
+        }.onChange(of: configurations!.bindingPickerItems) { newValue in
             configurationsBindingPickerItems = newValue
         }.onChange(of: configurationsBindingPickerItems) { newValue in
-            configurations.bindingPickerItems = newValue
+            configurations?.bindingPickerItems = newValue
         }
     }
 }

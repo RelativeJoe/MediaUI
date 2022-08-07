@@ -59,8 +59,8 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
             pickerItems.forEach { item in
                 updateState(pickerItem: item)
             }
-            configurations.pickerItems[PhotosPickerID.mediaSet.rawValue]?.removeAll()
         }.photosPickerId(PhotosPickerID.mediaSet.rawValue)
+            .environment(\.configurations, configurations)
 //        .onChange(of: configurations.pickerItems) { newValuey in
 //            guard let newValue = newValuey[PhotosPickerID.mediaSet.rawValue], !newValue.isEmpty else {return}
 //            pickerItems = newValue
