@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+import STools
 
 #if canImport(Charts)
 @available(iOS 16.0, *)
@@ -23,8 +24,13 @@ public struct MultiPhotosPicker<Content: View>: View {
     public var body: some View {
         Group {
             if configurations.id == id || configurations.id.isEmpty {
-                content
-                    .photosPicker(isPresented: $configurations.isPresented, selection: $configurations.bindingPickerItems, maxSelectionCount: 1, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
+                if maxSelectionCount == 1 {
+                    content
+                        .photosPicker(isPresented: $configurations.isPresented, selection: $configurations.bindingPickerItems, maxSelectionCount: 1, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
+                }else {
+                    content
+                        .photosPicker(isPresented: $configurations.isPresented, selection: $configurations.bindingPickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
+                }
             }else {
                 content
             }
