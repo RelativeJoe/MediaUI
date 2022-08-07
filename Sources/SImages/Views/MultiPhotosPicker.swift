@@ -11,11 +11,12 @@ import PhotosUI
 #if canImport(Charts)
 @available(iOS 16.0, *)
 struct MultiPhotosPicker: ViewModifier {
-    @Environment(\.configurations) private var configurations
+    @EnvironmentObject var configurations: PhotosPickerConfigurations
+//    @Environment(\.configurations) private var configurations
     @Environment(\.photosPickerId) private var id
     @Binding public var isPresented: Bool
-    @State private var configurationsBindingPickerItems = [PhotosPickerItem]()
-    @State private var configurationsPresentation = false
+//    @State private var configurationsBindingPickerItems = [PhotosPickerItem]()
+//    @State private var configurationsPresentation = false
     let filter: PHPickerFilter?
     let encoding: PhotosPickerItem.EncodingDisambiguationPolicy
     let maxSelectionCount: Int?
@@ -23,31 +24,21 @@ struct MultiPhotosPicker: ViewModifier {
     let library: PHPhotoLibrary
     func body(content: Content) -> some View {
         Group {
-            if configurations!.id == id || configurations!.id.isEmpty {
+            if configurations.id == id || configurations.id.isEmpty {
                 content
-                    .photosPicker(isPresented: $configurationsPresentation, selection: $configurationsBindingPickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
+                    .photosPicker(isPresented: $configurations.isPresented, selection: $configurations.bindingPickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
                     .onAppear {
-                        if configurations!.id.isEmpty {
-                            configurations!.id = id
+                        if configurations.id.isEmpty {
+                            configurations.id = id
                         }
                     }.onDisappear {
-                        configurations!.id = ""
+                        configurations.id = ""
                     }
             }else {
                 content
             }
         }.onChange(of: isPresented) { newValue in
-            configurations?.currentlyPicking = newValue ? id: ""
-            configurationsPresentation = isPresented
-        }.onChange(of: configurationsPresentation) { newValue in
-            guard newValue != configurations!.isPresented else {return}
-            configurations!.isPresented = newValue
-        }.onReceive(configurations!.$bindingPickerItems) { newValue in
-            guard newValue != configurationsBindingPickerItems else {return}
-            configurationsBindingPickerItems = newValue
-        }.onChange(of: configurationsBindingPickerItems) { newValue in
-            guard newValue != configurations?.bindingPickerItems else {return}
-            configurations?.bindingPickerItems = newValue
+            configurations.currentlyPicking = newValue ? id: ""
         }
     }
 }

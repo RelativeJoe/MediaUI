@@ -18,15 +18,16 @@ public extension View {
 
 @available(iOS 16.0, *)
 struct PhotoPickerItemModifier: ViewModifier {
-    @Environment(\.configurations) var configurations
+    @EnvironmentObject var configurations: PhotosPickerConfigurations
+//    @Environment(\.configurations) var configurations
     @Environment(\.photosPickerId) var id
     let action: ([PhotosPickerItem]) -> Void
     func body(content: Content) -> some View {
         content
-            .onReceive(configurations!.$pickerItems) { newValuey in
+            .onChange(of: configurations.pickerItems) { newValuey in
                 guard let newValue = newValuey[PhotosPickerID.mediaSet.rawValue], !newValue.isEmpty else {return}
                 action(newValue)
-                configurations?.pickerItems[id]?.removeAll()
+                configurations.pickerItems[id]?.removeAll()
             }
     }
 }

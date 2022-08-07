@@ -13,7 +13,7 @@ import PhotosUI
 //MARK: - Public Initializer
 @available(iOS 16.0, *)
 public struct MediaSet<Medias: Mediabley, Content: View>: View {
-    @Environment(\.configurations) var configurations
+    @EnvironmentObject var configurations: PhotosPickerConfigurations
     @Binding private var isPresented: Bool
     @State private var pickerItems = [PhotosPickerItem]()
     @Binding private var content: [Medias]
@@ -60,7 +60,6 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
                 updateState(pickerItem: item)
             }
         }.photosPickerId(PhotosPickerID.mediaSet.rawValue)
-            .environment(\.configurations, configurations)
 //        .onChange(of: configurations.pickerItems) { newValuey in
 //            guard let newValue = newValuey[PhotosPickerID.mediaSet.rawValue], !newValue.isEmpty else {return}
 //            pickerItems = newValue
