@@ -10,17 +10,17 @@ import PhotosUI
 
 #if canImport(Charts)
 @available(iOS 16.0, *)
-struct MultiPhotosPicker: ViewModifier {
-    @EnvironmentObject var configurations: PhotosPickerConfigurations
-    @Environment(\.photosPickerId) private var id
-    @Environment(\.photosPickerPresentingId) private var presentingId
-    @Binding public var isPresented: Bool
-    let filter: PHPickerFilter?
-    let encoding: PhotosPickerItem.EncodingDisambiguationPolicy
-    let maxSelectionCount: Int?
-    let behavior: PhotosPickerSelectionBehavior
-    let library: PHPhotoLibrary
-    func body(content: Content) -> some View {
+public struct MultiPhotosPicker<Content: View>: View {
+    @EnvironmentObject private var configurations: PhotosPickerConfigurations
+    @Binding private var isPresented: Bool
+    private let id: String
+    private let filter: PHPickerFilter?
+    private let encoding: PhotosPickerItem.EncodingDisambiguationPolicy
+    private let maxSelectionCount: Int?
+    private let behavior: PhotosPickerSelectionBehavior
+    private let library: PHPhotoLibrary
+    private let content: Content
+    public var body: some View {
         Group {
             if configurations.id == id || configurations.id.isEmpty {
                 content
@@ -35,18 +35,39 @@ struct MultiPhotosPicker: ViewModifier {
         }.onDisappear {
             configurations.id = ""
         }.onChange(of: isPresented) { newValue in
-            configurations.currentlyPicking = newValue ? presentingId: ""
+            configurations.currentlyPicking = newValue ? id: ""
         }.onChange(of: configurations.isPresented) { newValue in
-            guard isPresented != newValue else {return}
+            guard isPresented != configurations.isPresented else {return}
             isPresented = newValue
         }
     }
 }
 
+//MARK: - Public Functions
 @available(iOS 16.0, *)
-public extension View {
-    @ViewBuilder func multiPhotosPicker(isPresented: Binding<Bool>, maxSelectionCount: Int? = nil, selectionBehavior: PhotosPickerSelectionBehavior = .default, matching filter: PHPickerFilter? = nil, preferredItemEncoding: PhotosPickerItem.EncodingDisambiguationPolicy = .automatic, photoLibrary: PHPhotoLibrary = .shared()) -> some View {
-        self.modifier(MultiPhotosPicker(isPresented: isPresented, filter: filter, encoding: preferredItemEncoding, maxSelectionCount: maxSelectionCount, behavior: selectionBehavior, library: photoLibrary))
+public extension MultiPhotosPicker {
+///SImages: Listen to the changes for multiple photo selection
+    @ViewBuilder func pickerItems(_ action: @escaping ([PhotosPickerItem]) -> Void) -> some View {
+        self.privatePickerItems(id: id, action: action)
+    }
+///SImages: Listen to the changes for single photo selection
+    @ViewBuilder func pickerItem(_ action: @escaping (PhotosPickerItem?) -> Void) -> some View {
+        self.privatePickerItem(id: id, action: action)
+    }
+}
+
+//MARK: - Internal Initializer
+@available(iOS 16.0, *)
+internal extension MultiPhotosPicker {
+    init(id: String, isPresented: Binding<Bool>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, content: Content) {
+        self._isPresented = isPresented
+        self.id = id
+        self.filter = filter
+        self.encoding = encoding
+        self.maxSelectionCount = maxSelectionCount
+        self.behavior = behavior
+        self.library = library
+        self.content = content
     }
 }
 #endif

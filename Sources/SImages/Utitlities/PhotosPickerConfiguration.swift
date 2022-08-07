@@ -10,10 +10,10 @@ import PhotosUI
 
 #if canImport(Charts)
 @available(iOS 16.0, *)
-final class PhotosPickerConfigurations: ObservableObject {
-    @Published var isPresented = false
-    @Published var pickerItems = [String: [PhotosPickerItem]]()
-    @Published var bindingPickerItems = [PhotosPickerItem]() {
+final internal class PhotosPickerConfigurations: ObservableObject {
+    @Published internal var isPresented = false
+    @Published internal var pickerItems = [String: [PhotosPickerItem]]()
+    @Published internal var bindingPickerItems = [PhotosPickerItem]() {
         didSet {
             guard !bindingPickerItems.isEmpty else {return}
             pickerItems[currentlyPicking] = bindingPickerItems
@@ -21,8 +21,8 @@ final class PhotosPickerConfigurations: ObservableObject {
             currentlyPicking = ""
         }
     }
-    @Published var id = ""
-    @Published var currentlyPicking = "" {
+    @Published internal var id = ""
+    @Published internal var currentlyPicking = "" {
         didSet {
             isPresented = !currentlyPicking.isEmpty
         }
@@ -30,6 +30,6 @@ final class PhotosPickerConfigurations: ObservableObject {
 }
 #endif
 
-enum PhotosPickerID: String, RawRepresentable {
+internal enum PhotosPickerID: String, RawRepresentable {
     case mediaImage, mediaSet
 }

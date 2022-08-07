@@ -10,27 +10,12 @@ import PhotosUI
 
 #if canImport(Charts)
 @available(iOS 16.0, *)
-public extension View {
-    @ViewBuilder func pickerItems(_ action: @escaping ([PhotosPickerItem]) -> Void) -> some View {
-        self.modifier(PhotoPickerItemModifier(action: action))
-    }
-    @ViewBuilder func pickerItem(_ action: @escaping (PhotosPickerItem?) -> Void) -> some View {
-        self.modifier(PhotoPickerItemModifier(singleAction: action))
-    }
-}
-
-@available(iOS 16.0, *)
-struct PhotoPickerItemModifier: ViewModifier {
-    @EnvironmentObject var configurations: PhotosPickerConfigurations
-//    @Environment(\.configurations) var configurations
-    @Environment(\.photosPickerId) var id
-    let action: (([PhotosPickerItem]) -> Void)?
-    let singleAction: ((PhotosPickerItem?) -> Void)?
-    init(action: (([PhotosPickerItem]) -> Void)? = nil, singleAction: ((PhotosPickerItem?) -> Void)? = nil) {
-        self.action = action
-        self.singleAction = singleAction
-    }
-    func body(content: Content) -> some View {
+internal struct PhotoPickerItemModifier: ViewModifier {
+    @EnvironmentObject private var configurations: PhotosPickerConfigurations
+    private let id: String
+    private let action: (([PhotosPickerItem]) -> Void)?
+    private let singleAction: ((PhotosPickerItem?) -> Void)?
+    internal func body(content: Content) -> some View {
         content
             .onChange(of: configurations.pickerItems) { newValuey in
                 guard let newValue = newValuey[id], !newValue.isEmpty else {return}
@@ -38,6 +23,16 @@ struct PhotoPickerItemModifier: ViewModifier {
                 action?(newValue)
                 configurations.pickerItems[id]?.removeAll()
             }
+    }
+}
+
+//MARK: - Private Initializer
+@available(iOS 16.0, *)
+internal extension PhotoPickerItemModifier {
+    init(_ id: String, action: (([PhotosPickerItem]) -> Void)? = nil, singleAction: ((PhotosPickerItem?) -> Void)? = nil) {
+        self.action = action
+        self.singleAction = singleAction
+        self.id = id
     }
 }
 #endif

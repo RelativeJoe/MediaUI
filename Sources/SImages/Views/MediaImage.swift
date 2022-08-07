@@ -12,7 +12,7 @@ import STools
 //MARK: - Public Initializer
 @available(iOS 16.0, macOS 13.0, *)
 public struct MediaImage<Content: View, Media: Mediabley>: View {
-    @EnvironmentObject var configurations: PhotosPickerConfigurations
+    @EnvironmentObject private var configurations: PhotosPickerConfigurations
     @Binding private var height: CGFloat?
     @Binding private var mediable: Media
     @Binding private var width: CGFloat?
@@ -22,17 +22,6 @@ public struct MediaImage<Content: View, Media: Mediabley>: View {
     private let resizable: Bool
     private let aspectRatio: (CGFloat?, ContentMode)?
     private let disabledPicker: Bool
-///MediaImage: A MediaImage is a View that displays a default Image which can be tapped in order to present a PhotosPicker & dynamically display the picked Image in a Downsampled style.
-    public init(mediable: AnyBinding<Media>) {
-        self._mediable = mediable.unwrappedValue(defaultValue: Media.empty)
-        self._height = .constant(nil)
-        self._width = .constant(nil)
-        self.squared = false
-        self.aspectRatio = nil
-        self.resizable = false
-        self.placeHolder = nil
-        self.disabledPicker = false
-    }
     public var body: some View {
         Button(action: {
             presentable.isPresented.toggle()
@@ -52,10 +41,26 @@ public struct MediaImage<Content: View, Media: Mediabley>: View {
                 }
             }
         }.disabled(disabledPicker)
-        .multiPhotosPicker(isPresented: $presentable.isPresented, matching: .images)
+            .multiPhotosPicker(id: PhotosPickerID.mediaImage.rawValue, isPresented: $presentable.isPresented, matching: .images)
         .pickerItem { newValue in
             updateState(pickerItem: newValue)
-        }.photosPickerId(PhotosPickerID.mediaImage.rawValue, isPresented: $presentable.isPresented)
+        }
+    }
+}
+
+//MARK: - Public Initializer
+@available(iOS 16.0, macOS 13.0, *)
+public extension MediaImage {
+///MediaImage: A MediaImage is a View that displays a default Image which can be tapped in order to present a PhotosPicker & dynamically display the picked Image in a Downsampled style.
+    init(mediable: AnyBinding<Media>) {
+        self._mediable = mediable.unwrappedValue(defaultValue: Media.empty)
+        self._height = .constant(nil)
+        self._width = .constant(nil)
+        self.squared = false
+        self.aspectRatio = nil
+        self.resizable = false
+        self.placeHolder = nil
+        self.disabledPicker = false
     }
 }
 

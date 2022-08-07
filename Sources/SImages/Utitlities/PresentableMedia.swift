@@ -9,7 +9,7 @@ import SwiftUI
 import PhotosUI
 
 @available(iOS 16.0, macOS 13.0, *)
-struct PresentableMedia: Hashable {
+internal struct PresentableMedia: Hashable {
     var isPresented = false
     var selected = false
     var anyImage = AnyImage.empty

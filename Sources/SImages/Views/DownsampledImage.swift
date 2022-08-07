@@ -16,16 +16,6 @@ public struct DownsampledImage<Content: View>: View {
     private let squared: Bool
     private let resizable: Bool
     private let aspectRatio: (CGFloat?, ContentMode)?
-///DownsampledImage: A DownsampledImage is a View that displays an Image in a Downsampled style.
-    public init(image: AnyBinding<UNImage>) {
-        self._oldImage = image.value
-        self._height = .constant(nil)
-        self._width = .constant(nil)
-        self.squared = false
-        self.aspectRatio = nil
-        self.resizable = false
-        self.placeHolder = nil
-    }
     public var body: some View {
         if let oldImage = oldImage {
             if let width = width, let height = height, let image = oldImage.downsampledImage(maxWidth: width, maxHeight: height) {
@@ -43,6 +33,20 @@ public struct DownsampledImage<Content: View>: View {
         }else {
             placeHolder
         }
+    }
+}
+
+//MARK: - Public Initializer
+public extension DownsampledImage {
+    ///DownsampledImage: A DownsampledImage is a View that displays an Image in a Downsampled style.
+    init(image: AnyBinding<UNImage>) {
+        self._oldImage = image.value
+        self._height = .constant(nil)
+        self._width = .constant(nil)
+        self.squared = false
+        self.aspectRatio = nil
+        self.resizable = false
+        self.placeHolder = nil
     }
 }
 
