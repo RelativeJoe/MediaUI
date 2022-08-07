@@ -12,11 +12,8 @@ import PhotosUI
 @available(iOS 16.0, *)
 struct MultiPhotosPicker: ViewModifier {
     @EnvironmentObject var configurations: PhotosPickerConfigurations
-//    @Environment(\.configurations) private var configurations
     @Environment(\.photosPickerId) private var id
     @Binding public var isPresented: Bool
-    @State private var configurationsBindingPickerItems = [PhotosPickerItem]()
-    @State private var configurationsPresentation = false
     let filter: PHPickerFilter?
     let encoding: PhotosPickerItem.EncodingDisambiguationPolicy
     let maxSelectionCount: Int?
@@ -26,7 +23,7 @@ struct MultiPhotosPicker: ViewModifier {
         Group {
             if configurations.id == id || configurations.id.isEmpty {
                 content
-                    .photosPicker(isPresented: $configurationsPresentation, selection: $configurations.bindingPickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
+                    .photosPicker(isPresented: $configurations.isPresented, selection: $configurations.bindingPickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
                     .onAppear {
                         if configurations.id.isEmpty {
                             configurations.id = id
@@ -39,8 +36,6 @@ struct MultiPhotosPicker: ViewModifier {
             }
         }.onChange(of: isPresented) { newValue in
             configurations.currentlyPicking = newValue ? id: ""
-        }.onChange(of: configurations.isPresented) { newValue in
-            configurationsPresentation = newValue
         }
     }
 }
