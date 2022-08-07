@@ -41,7 +41,7 @@ public struct MediaImage<Content: View, Media: Mediabley>: View {
                 }
             }
         }.disabled(disabledPicker)
-            .multiPhotosPicker(id: PhotosPickerID.mediaImage.rawValue, isPresented: $presentable.isPresented, matching: .images)
+        .multiPhotosPicker(id: UUID().uuidString, isPresented: $presentable.isPresented, maxSelectionCount: 1, matching: .images)
         .pickerItem { newValue in
             updateState(pickerItem: newValue)
         }
