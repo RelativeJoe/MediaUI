@@ -40,6 +40,7 @@ struct MultiPhotosPicker: ViewModifier {
             configurations?.currentlyPicking = newValue ? id: ""
         }.onReceive(configurations!.$isPresented) { newValue in
             print(newValue)
+            print(configurations!.isPresented)
             guard newValue != configurationsPresentation else {return}
             configurationsPresentation = newValue
         }.onChange(of: configurationsPresentation) { newValue in
