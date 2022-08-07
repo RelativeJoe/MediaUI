@@ -24,6 +24,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
     private let library: PHPhotoLibrary
     private var contentForLoading: (() -> Content)?
     private var contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?
+    let id = UUID().uuidString
     public var body: some View {
         Group {
             if content.isEmpty {
@@ -40,7 +41,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
                     contentForMedia?(DownsampledImage<Text>(image: .binding($content[index].data.unImage)), item, index)
                 }
             }
-        }.multiPhotosPicker(id: UUID().uuidString, isPresented: $isPresented, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
+        }.multiPhotosPicker(id: id, isPresented: $isPresented, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
         .pickerItems { items in
             pickerItems = items
             pickerItems.forEach { _ in

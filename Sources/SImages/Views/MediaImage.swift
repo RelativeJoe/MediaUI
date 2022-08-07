@@ -22,6 +22,7 @@ public struct MediaImage<Content: View, Media: Mediabley>: View {
     private let resizable: Bool
     private let aspectRatio: (CGFloat?, ContentMode)?
     private let disabledPicker: Bool
+    let id = UUID().uuidString
     public var body: some View {
         Button(action: {
             presentable.isPresented.toggle()
@@ -41,7 +42,7 @@ public struct MediaImage<Content: View, Media: Mediabley>: View {
                 }
             }
         }.disabled(disabledPicker)
-        .multiPhotosPicker(id: UUID().uuidString, isPresented: $presentable.isPresented, maxSelectionCount: 1, matching: .images)
+        .multiPhotosPicker(id: id, isPresented: $presentable.isPresented, maxSelectionCount: 1, matching: .images)
         .pickerItem { newValue in
             updateState(pickerItem: newValue)
         }
