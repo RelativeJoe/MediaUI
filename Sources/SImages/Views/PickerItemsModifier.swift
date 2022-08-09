@@ -8,8 +8,8 @@
 import SwiftUI
 import PhotosUI
 
-#if canImport(Charts)
-@available(iOS 16.0, *)
+#if canImport(Charts)//remove after iOS 16 goes public
+@available(iOS 16.0, macOS 13.0, *)
 internal struct PhotoPickerItemModifier: ViewModifier {
     @EnvironmentObject private var configurations: PhotosPickerConfigurations
     private let id: String
@@ -27,7 +27,7 @@ internal struct PhotoPickerItemModifier: ViewModifier {
 }
 
 //MARK: - Private Initializer
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 internal extension PhotoPickerItemModifier {
     init(_ id: String, action: (([PhotosPickerItem]) -> Void)? = nil, singleAction: ((PhotosPickerItem?) -> Void)? = nil) {
         self.action = action

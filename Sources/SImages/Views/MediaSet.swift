@@ -5,13 +5,13 @@
 //  Created by Joe Maghzal on 8/5/22.
 //
 
-#if canImport(Charts)
+#if canImport(Charts)//remove after iOS 16 goes public
 
 import SwiftUI
 import PhotosUI
 
 ///SImages: A MediaSet is a collection of Photos picked by the user. You can place it inside an HStack, VStack, LazyVGrid, LazyHGrid...
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 public struct MediaSet<Medias: Mediabley, Content: View>: View {
     @EnvironmentObject private var configurations: PhotosPickerConfigurations
     @Binding private var isPresented: Bool
@@ -55,7 +55,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
 }
 
 //MARK: - Private Initializer
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 private extension MediaSet {
     init(_ id: String, isPresented: Binding<Bool>, content: Binding<[Medias]>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, contentForLoading: (() -> Content)?, contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?) {
         self._isPresented = isPresented
@@ -72,7 +72,7 @@ private extension MediaSet {
 }
 
 //MARK: - Public Initializer
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 extension MediaSet {
 ///SImages: Initialize a MediaSet.
     public init(isPresented: Binding<Bool>, content: Binding<[Medias]>) {
@@ -88,7 +88,7 @@ extension MediaSet {
 }
 
 //MARK: - Private Modifiers
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 private extension MediaSet {
     func updateState(pickerItem: PhotosPickerItem?) {
         Task {
@@ -109,7 +109,7 @@ private extension MediaSet {
 }
 
 //MARK: - Public Modifiers
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 public extension MediaSet {
 ///Assign a filter/some filters to the PhotosPicker.
     func filter(by filter: PHPickerFilter?) -> Self {

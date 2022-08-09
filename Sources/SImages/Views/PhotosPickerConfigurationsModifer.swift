@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-#if canImport(Charts)
-@available(iOS 16.0, *)
+#if canImport(Charts)//remove after iOS 16 goes public
+@available(iOS 16.0, macOS 13.0, *)
 internal struct PhotosPickerConfigurationsModifer: ViewModifier {
     @Environment(\.configurations) private var configurations
     internal func body(content: Content) -> some View {

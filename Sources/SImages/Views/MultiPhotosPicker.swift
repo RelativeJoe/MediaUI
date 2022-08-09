@@ -9,8 +9,8 @@ import SwiftUI
 import PhotosUI
 import STools
 
-#if canImport(Charts)
-@available(iOS 16.0, *)
+#if canImport(Charts)//remove after iOS 16 goes public
+@available(iOS 16.0, macOS 13.0, *)
 public struct MultiPhotosPicker<Content: View>: View {
     @EnvironmentObject private var configurations: PhotosPickerConfigurations
     @Binding private var isPresented: Bool
@@ -50,7 +50,7 @@ public struct MultiPhotosPicker<Content: View>: View {
 }
 
 //MARK: - Public Functions
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 public extension MultiPhotosPicker {
 ///MultiPhotosPicker: Listen to the changes for multiple photo selection
     @ViewBuilder func pickerItems(_ action: @escaping ([PhotosPickerItem]) -> Void) -> some View {
@@ -63,7 +63,7 @@ public extension MultiPhotosPicker {
 }
 
 //MARK: - Internal Initializer
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 internal extension MultiPhotosPicker {
     init(id: String, isPresented: Binding<Bool>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, content: Content) {
         self._isPresented = isPresented

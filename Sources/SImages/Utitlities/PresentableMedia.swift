@@ -4,7 +4,7 @@
 //
 //  Created by Joe Maghzal on 7/30/22.
 //
-#if canImport(Charts)
+#if canImport(Charts)//remove after iOS 16 goes public
 import SwiftUI
 import PhotosUI
 

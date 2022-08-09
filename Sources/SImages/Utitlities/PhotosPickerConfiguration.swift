@@ -8,8 +8,8 @@
 import SwiftUI
 import PhotosUI
 
-#if canImport(Charts)
-@available(iOS 16.0, *)
+#if canImport(Charts)//remove after iOS 16 goes public
+@available(iOS 16.0, macOS 13.0, *)
 final internal class PhotosPickerConfigurations: ObservableObject {
     @Published internal var isPresented = false
     @Published internal var pickerItems = [String: [PhotosPickerItem]]()
