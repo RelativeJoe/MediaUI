@@ -16,7 +16,7 @@ let package = Package(
             targets: ["SImages"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/NoeOnJupiter/STools", "1.0.3"..<"1.1.0")
+        .package(url: "https://github.com/TimmysApp/STools", "1.0.3"..<"1.1.0")
     ],
     targets: [
         .target(
