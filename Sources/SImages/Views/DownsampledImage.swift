@@ -39,7 +39,7 @@ public struct DownsampledImage<Content: View>: View {
 //MARK: - Public Initializer
 public extension DownsampledImage {
 ///SImages: Initialize a DownsampledImage from a UNImage, or a Binding one.
-    init(image: UNImage) {
+    init(image: UNImage?) {
         self.oldImage = image
         self.height = nil
         self.width = nil
