@@ -4,7 +4,7 @@
 //
 //  Created by Joe Maghzal on 6/17/22.
 //
-#if canImport(Charts)//remove after iOS 16 goes public
+
 import SwiftUI
 import PhotosUI
 import STools
@@ -184,4 +184,3 @@ public extension MediaImage {
         }
     }
 }
-#endif

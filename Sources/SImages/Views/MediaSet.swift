@@ -5,8 +5,6 @@
 //  Created by Joe Maghzal on 8/5/22.
 //
 
-#if canImport(Charts)//remove after iOS 16 goes public
-
 import SwiftUI
 import PhotosUI
 
@@ -38,7 +36,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
                         ProgressView()
                     }
                 }else {
-//                    contentForMedia?(DownsampledImage<Text>(image: .binding($content[index].data.unImage)), item, index)
+                    contentForMedia?(DownsampledImage<Text>(image: content[index].data.unImage), item, index)
                 }
             }
         }.multiPhotosPicker(id: id, isPresented: $isPresented, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
@@ -144,4 +142,3 @@ public extension MediaSet {
         MediaSet(id.description, isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
     }
 }
-#endif
