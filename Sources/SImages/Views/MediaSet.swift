@@ -21,7 +21,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
     private let behavior: PhotosPickerSelectionBehavior
     private let library: PHPhotoLibrary
     private var contentForLoading: (() -> Content)?
-    private var contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?
+    private var contentForMedia: ((DownsampledImage, Medias, Int) -> Content)?
     private let id: String
     public var body: some View {
         Group {
@@ -36,7 +36,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
                         ProgressView()
                     }
                 }else {
-                    contentForMedia?(DownsampledImage<Text>(image: content[index].data.unImage), item, index)
+                    contentForMedia?(DownsampledImage(image: content[index].data.unImage), item, index)
                 }
             }
         }.multiPhotosPicker(id: id, isPresented: $isPresented, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
@@ -55,7 +55,7 @@ public struct MediaSet<Medias: Mediabley, Content: View>: View {
 //MARK: - Private Initializer
 @available(iOS 16.0, macOS 13.0, *)
 private extension MediaSet {
-    init(_ id: String, isPresented: Binding<Bool>, content: Binding<[Medias]>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, contentForLoading: (() -> Content)?, contentForMedia: ((DownsampledImage<Text>, Medias, Int) -> Content)?) {
+    init(_ id: String, isPresented: Binding<Bool>, content: Binding<[Medias]>, filter: PHPickerFilter?, encoding: PhotosPickerItem.EncodingDisambiguationPolicy, maxSelectionCount: Int?, behavior: PhotosPickerSelectionBehavior, library: PHPhotoLibrary, contentForLoading: (() -> Content)?, contentForMedia: ((DownsampledImage, Medias, Int) -> Content)?) {
         self._isPresented = isPresented
         self._content = content
         self.filter = filter
@@ -134,7 +134,7 @@ public extension MediaSet {
         MediaSet(id, isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
     }
 ///MediaSet: Assing the MediaImage to be displayed for each of the picked Photos.
-    func content(@ViewBuilder contentForMedia: @escaping (DownsampledImage<Text>, Medias, Int) -> Content) -> Self {
+    func content(@ViewBuilder contentForMedia: @escaping (DownsampledImage, Medias, Int) -> Content) -> Self {
         MediaSet(id, isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia)
     }
 ///MediaSet: Set the PhotosPicker id of the view.

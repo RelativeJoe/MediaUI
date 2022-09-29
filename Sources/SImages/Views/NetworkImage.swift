@@ -25,11 +25,13 @@ public struct NetworkImage: View {
         ZStack {
             Color.clear
                 .onTask(id: "NetworkImage") {
+                    imageState = .loading
                     guard let imageURL else {
+                        error = "Invalid Image URL"
+                        imageState = .error
                         return
                     }
                     do {
-                        imageState = .loading
                         let data = try await URLSession.shared.data(from: imageURL).0
                         unImage = UNImage(data: data)
                         imageState = .idle
@@ -49,7 +51,7 @@ public struct NetworkImage: View {
                     if let loading {
                         loading
                     }else {
-                        ActivityView()
+                        //ActivityView()
                     }
                 case .error:
                     Text(error ?? "Unknown Error")
@@ -65,10 +67,24 @@ public extension NetworkImage {
         if let url {
             self.imageURL = URL(string: url)
         }
+        self.height = nil
+        self.width = nil
+        self.squared = false
+        self.aspectRatio = nil
+        self.resizable = false
+        self.placeHolder = nil
+        self.loading = nil
     }
 ///SImages: Initialize a NetworkImage from an URL.
     init(url: URL?) {
         self.imageURL = url
+        self.height = nil
+        self.width = nil
+        self.squared = false
+        self.aspectRatio = nil
+        self.resizable = false
+        self.placeHolder = nil
+        self.loading = nil
     }
 }
 
