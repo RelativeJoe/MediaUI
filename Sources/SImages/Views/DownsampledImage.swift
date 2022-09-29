@@ -29,11 +29,9 @@ public struct DownsampledImage: View {
                     .framey(width: image.fitWidth(for: height), height: height, masterWidth: self.width, masterHeight: self.height, master: squared)
             }else {
                 placeHolder
-                    .frame(width: width ?? width, height: height ?? height)
             }
         }else {
             placeHolder
-                .frame(width: width ?? width, height: height ?? height)
         }
     }
 }
