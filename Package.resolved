@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/NoeOnJupiter/STools",
       "state" : {
-        "revision" : "b34411b439968387cc9f00fcb75fe86f7e57ad82",
-        "version" : "1.0.74"
+        "revision" : "16432cd7549c22efb7fbd2823c68473016a30e1f",
+        "version" : "1.0.75"
       }
     }
   ],
