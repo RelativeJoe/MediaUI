@@ -29,9 +29,11 @@ public struct DownsampledImage: View {
                     .framey(width: image.fitWidth(for: height), height: height, masterWidth: self.width, masterHeight: self.height, master: squared)
             }else {
                 placeHolder
+                    .frame(width: width ?? width, height: height ?? height)
             }
         }else {
             placeHolder
+                .frame(width: width ?? width, height: height ?? height)
         }
     }
 }
@@ -89,7 +91,7 @@ public extension DownsampledImage {
     }
 ///DownsampledImage: Constrains this View's dimesnions to the specified aspect rario.
     func aspect(_ ratio: CGFloat? = nil, contentMode: ContentMode) -> Self {
-        DownsampledImage(image: oldImage, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, content: placeHolder)
+        DownsampledImage(image: oldImage, height: height, width: width, squared: squared, aspectRatio: (ratio, contentMode), resizable: resizable, content: placeHolder)
     }
 ///DownsampledImage: Positions this View within an invisible frame with the specified size.
     func frame(width: CGFloat? = nil, height: CGFloat? = nil) -> Self  {
