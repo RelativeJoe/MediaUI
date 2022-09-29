@@ -25,19 +25,25 @@ public struct NetworkImage: View {
         ZStack {
             Color.clear
                 .onTask(id: "NetworkImage") {
+                    guard unImage == nil else {return}
                     imageState = .loading
                     guard let imageURL else {
                         error = "Invalid Image URL"
                         imageState = .error
                         return
                     }
-                    do {
-                        let data = try await URLSession.shared.data(from: imageURL).0
-                        unImage = UNImage(data: data)
+                    if let image = ImageConfigurations.cache.image(for: imageURL) {
+                        unImage = image
                         imageState = .idle
-                    }catch {
-                        self.error = error.localizedDescription
-                        imageState = .error
+                    }else {
+                        do {
+                            let data = try await URLSession.shared.data(from: imageURL).0
+                            unImage = UNImage(data: data)
+                            imageState = .idle
+                        }catch {
+                            self.error = error.localizedDescription
+                            imageState = .error
+                        }
                     }
                 }
             switch imageState {
