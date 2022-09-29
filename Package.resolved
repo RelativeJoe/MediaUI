@@ -3,7 +3,7 @@
     {
       "identity" : "stools",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/NoeOnJupiter/STools",
+      "location" : "https://github.com/TimmysApp/STools",
       "state" : {
         "revision" : "438bdfb7b83f4ed1443af915132429c763362319",
         "version" : "1.0.80"
