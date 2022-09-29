@@ -22,39 +22,16 @@ public struct NetworkImage: View {
     private let aspectRatio: (CGFloat?, ContentMode)?
     private let loading: AnyView?
     public var body: some View {
-        Color.clear
+        content
             .onTask {
-                guard unImage == nil else {return}
-                imageState = .loading
-                guard let imageURL else {
-                    error = "Invalid Image URL"
-                    imageState = .error
-                    return
-                }
-                if let image = ImageConfigurations.cache.image(for: imageURL) {
-                    unImage = image
-                    imageState = .idle
-                }else {
-                    do {
-                        let data = try await URLSession.shared.data(from: imageURL).0
-                        unImage = UNImage(data: data)
-                        imageState = .idle
-                    }catch {
-                        self.error = error.localizedDescription
-                        imageState = .error
-                    }
-                }
-            }.overlay(image)
+                await load()
+            }
     }
-    var image: some View {
+    var content: some View {
         Group {
             switch imageState {
                 case .idle:
-                    if let unImage {
-                        DownsampledImage(image: unImage, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, content: placeHolder)
-                    }else {
-                        placeHolder
-                    }
+                    DownsampledImage(image: unImage, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, content: placeHolder)
                 case .loading:
                     if let loading {
                         loading
@@ -63,6 +40,32 @@ public struct NetworkImage: View {
                     }
                 case .error:
                     Text(error ?? "Unknown Error")
+            }
+        }
+    }
+}
+
+//MARK: - Private Functions
+private extension NetworkImage {
+    func load() async {
+        guard unImage == nil else {return}
+        imageState = .loading
+        guard let imageURL else {
+            error = "Invalid Image URL"
+            imageState = .error
+            return
+        }
+        if let image = ImageConfigurations.cache.image(for: imageURL) {
+            unImage = image
+            imageState = .idle
+        }else {
+            do {
+                let data = try await URLSession.shared.data(from: imageURL).0
+                unImage = UNImage(data: data)
+                imageState = .idle
+            }catch {
+                self.error = error.localizedDescription
+                imageState = .error
             }
         }
     }

@@ -10,28 +10,47 @@ import STools
 ///SImages: A DownsampledImage is a View that displays an Image in a Downsampled style.
 public struct DownsampledImage: View {
     private var oldImage: UNImage?
-    private var height: CGFloat?
-    private var width: CGFloat?
+    @State private var height: CGFloat?
+    @State private var width: CGFloat?
     private let placeHolder: AnyView?
     private let squared: Bool
     private let resizable: Bool
     private let aspectRatio: (CGFloat?, ContentMode)?
+    @State var dynamicSize = true
     public var body: some View {
-        if let oldImage = oldImage {
-            if let width = width, let height = height, let image = oldImage.downsampledImage(maxWidth: width, maxHeight: height) {
-                viewForImage(image)
-                    .framey(width: image.maxDimensions(width: width, height: height).width, height: image.maxDimensions(width: width, height: height).height, masterWidth: self.width, masterHeight: self.height, master: squared)
-            }else if let width = width, let image = oldImage.downsampledImage(width: width) {
-                viewForImage(image)
-                    .framey(width: width, height: image.fitHeight(for: width), masterWidth: self.width, masterHeight: self.height, master: squared)
-            }else if let height = height, let image = oldImage.downsampledImage(height: height) {
-                viewForImage(image)
-                    .framey(width: image.fitWidth(for: height), height: height, masterWidth: self.width, masterHeight: self.height, master: squared)
-            }else {
-                placeHolder
+        content
+            .onSizeChange { size in
+                guard dynamicSize else {return}
+                height = size.height
+                width = size.width
             }
-        }else {
-            placeHolder
+    }
+    var content: some View {
+        Group {
+            if let oldImage = oldImage {
+                if let width = width, let height = height, let image = oldImage.downsampledImage(maxWidth: width, maxHeight: height) {
+                    viewForImage(image)
+                        .framey(width: image.maxDimensions(width: width, height: height).width, height: image.maxDimensions(width: width, height: height).height, masterWidth: width, masterHeight: height, master: squared)
+                }else if let width = width, let image = oldImage.downsampledImage(width: width) {
+                    viewForImage(image)
+                        .framey(width: width, height: image.fitHeight(for: width), masterWidth: width, masterHeight: height, master: squared)
+                }else if let height = height, let image = oldImage.downsampledImage(height: height) {
+                    viewForImage(image)
+                        .framey(width: image.fitWidth(for: height), height: height, masterWidth: width, masterHeight: height, master: squared)
+                }else {
+                    if let placeHolder {
+                        placeHolder
+                    }else {
+                        Color.clear
+                    }
+                }
+            }else {
+                if let placeHolder {
+                    placeHolder
+                }else {
+                    Color.clear
+                }
+            }
         }
     }
 }
@@ -41,8 +60,8 @@ public extension DownsampledImage {
 ///SImages: Initialize a DownsampledImage from a UNImage, or a Binding one.
     init(image: UNImage?) {
         self.oldImage = image
-        self.height = nil
-        self.width = nil
+        self._height = State(wrappedValue: nil)
+        self._width = State(wrappedValue: nil)
         self.squared = false
         self.aspectRatio = nil
         self.resizable = false
@@ -54,8 +73,8 @@ public extension DownsampledImage {
 internal extension DownsampledImage {
     init(image: UNImage?, height: CGFloat?, width: CGFloat?, squared: Bool, aspectRatio: (CGFloat?, ContentMode)?, resizable: Bool, content: AnyView?) {
         self.oldImage = image
-        self.height = height
-        self.width = width
+        self._height = State(wrappedValue: height)
+        self._width = State(wrappedValue: width)
         self.squared = squared
         self.aspectRatio = aspectRatio
         self.placeHolder = content
