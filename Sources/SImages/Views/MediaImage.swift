@@ -11,13 +11,13 @@ import STools
 
 ///SImages: A MediaImage is a View that displays a default Image which can be tapped in order to present a PhotosPicker & dynamically display the picked Image in a Downsampled style.
 @available(iOS 16.0, macOS 13.0, *)
-public struct MediaImage<Content: View, Media: Mediabley>: View {
+public struct MediaImage<Media: Mediabley>: View {
     @EnvironmentObject private var configurations: PhotosPickerConfigurations
     @Binding private var mediable: Media
     @State private var presentable = PresentableMedia()
     private var width: CGFloat?
     private var height: CGFloat?
-    private let placeHolder: Content?
+    private let placeHolder: AnyView?
     private let squared: Bool
     private let resizable: Bool
     private let aspectRatio: (CGFloat?, ContentMode)?
@@ -28,7 +28,7 @@ public struct MediaImage<Content: View, Media: Mediabley>: View {
             presentable.isPresented.toggle()
         }) {
             if let mediable = mediable, mediable.data != Data() {
-                image(for: AnyImage(mediable.data))
+                DownsampledImage(image: AnyImage(mediable.data).unImage, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, content: placeHolder)
             }else {
                 switch presentable.mediaState {
                     case .failure(let error):
@@ -36,7 +36,7 @@ public struct MediaImage<Content: View, Media: Mediabley>: View {
                     case .loading:
                         ProgressView()
                     case .success(let anyImage):
-                        image(for: anyImage)
+                        DownsampledImage(image: anyImage.unImage, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, content: placeHolder)
                     default:
                         placeHolder
                 }
@@ -69,13 +69,13 @@ public extension MediaImage {
 //MARK: - Private Initializer
 @available(iOS 16.0, macOS 13.0, *)
 private extension MediaImage {
-    init(id: String, mediable: Binding<Media>, height: CGFloat? = nil, width: CGFloat? = nil, squared: Bool = false, aspectRatio: (CGFloat?, ContentMode)?, resizable: Bool, disabled: Bool, @ViewBuilder content: () -> Content? = {EmptyView()}) {
+    init(id: String, mediable: Binding<Media>, height: CGFloat?, width: CGFloat?, squared: Bool, aspectRatio: (CGFloat?, ContentMode)?, resizable: Bool, disabled: Bool, content: AnyView?) {
         self._mediable = mediable
         self.height = height
         self.width = width
         self.squared = squared
         self.aspectRatio = aspectRatio
-        self.placeHolder = content()
+        self.placeHolder = content
         self.resizable = resizable
         self.disabledPicker = disabled
         self.id = id
@@ -85,24 +85,6 @@ private extension MediaImage {
 //MARK: - Private Functions
 @available(iOS 16.0, macOS 13.0, *)
 private extension MediaImage {
-    @ViewBuilder func image(for anyImage: AnyImage?) -> some View {
-        if let oldImage = anyImage?.unImage {
-            if let width = width, let height = height, let image = oldImage.downsampledImage(maxWidth: width, maxHeight: height) {
-                viewForImage(image)
-                    .framey(width: image.maxDimensions(width: width, height: height).width, height: image.maxDimensions(width: width, height: height).height, masterWidth: self.width, masterHeight: self.height, master: squared)
-            }else if let width = width, let image = oldImage.downsampledImage(width: width) {
-                viewForImage(image)
-                    .framey(width: width, height: image.fitHeight(for: width), masterWidth: self.width, masterHeight: self.height, master: squared)
-            }else if let height = height, let image = oldImage.downsampledImage(height: height) {
-                viewForImage(image)
-                    .framey(width: image.fitWidth(for: height), height: height, masterWidth: self.width, masterHeight: self.height, master: squared)
-            }else {
-                placeHolder
-            }
-        }else {
-            placeHolder
-        }
-    }
     func updateState(pickerItem: PhotosPickerItem?) {
         presentable.mediaState = .loading
         guard let pickerItem = pickerItem else {return}
@@ -143,44 +125,30 @@ private extension MediaImage {
 public extension MediaImage {
 ///MediaImage: Make the Image take the Shape of a square.
     func squaredImage() -> Self {
-        MediaImage(id: id, mediable: $mediable, height: height, width: width, squared: true, aspectRatio: aspectRatio, resizable: resizable, disabled: disabledPicker) {
-            placeHolder
-        }
+        MediaImage(id: id, mediable: $mediable, height: height, width: width, squared: true, aspectRatio: aspectRatio, resizable: resizable, disabled: disabledPicker, content: placeHolder)
     }
 ////MediaImage: Sets the mode by which SwiftUI resizes an Image to fit it's space.
     func isResizable() -> Self {
-        MediaImage(id: id, mediable: $mediable, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: true, disabled: disabledPicker) {
-            placeHolder
-        }
+        MediaImage(id: id, mediable: $mediable, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: true, disabled: disabledPicker, content: placeHolder)
     }
 ///MediaImage: Constrains this View's dimesnions to the specified aspect rario.
     func aspect(_ ratio: CGFloat? = nil, contentMode: ContentMode) -> Self {
-        MediaImage(id: id, mediable: $mediable, height: height, width: width, squared: squared, aspectRatio: (ratio, contentMode), resizable: resizable, disabled: disabledPicker) {
-            placeHolder
-        }
+        MediaImage(id: id, mediable: $mediable, height: height, width: width, squared: squared, aspectRatio: (ratio, contentMode), resizable: resizable, disabled: disabledPicker, content: placeHolder)
     }
 ///MediaImage: Positions this View within an invisible frame with the specified size.
     func frame(width: CGFloat? = nil, height: CGFloat? = nil) -> Self {
-        MediaImage(id: id, mediable: $mediable, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, disabled: disabledPicker) {
-            placeHolder
-        }
+        MediaImage(id: id, mediable: $mediable, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, disabled: disabledPicker, content: placeHolder)
     }
 ///MediaImage: Adds a placeholder View if no Image can be displayed.
-    func placeHolder(@ViewBuilder placeholder: () -> Content) -> Self {
-        MediaImage(id: id, mediable: $mediable, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, disabled: disabledPicker) {
-            placeholder()
-        }
+    func placeHolder(@ViewBuilder placeholder: () -> some View) -> Self {
+        MediaImage(id: id, mediable: $mediable, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, disabled: disabledPicker, content: AnyView(placeholder()))
     }
 ///MediaImage: Disables the PhotosPicker button.
     func disabledPicker(_ disabled: Bool = true) -> Self {
-        MediaImage(id: id, mediable: $mediable, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, disabled: disabled) {
-            placeHolder
-        }
+        MediaImage(id: id, mediable: $mediable, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, disabled: disabled, content: placeHolder)
     }
 ///MediaImage: Set the PhotosPicker id of the view.
     func set(id: CustomStringConvertible) -> Self {
-        MediaImage(id: id.description, mediable: $mediable, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, disabled: disabledPicker) {
-            placeHolder
-        }
+        MediaImage(id: id.description, mediable: $mediable, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, disabled: disabledPicker, content: placeHolder)
     }
 }

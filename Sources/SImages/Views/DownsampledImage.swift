@@ -29,8 +29,9 @@ public struct DownsampledImage: View {
         Group {
             if let oldImage = oldImage {
                 if let width = width, let height = height, let image = oldImage.downsampledImage(maxWidth: width, maxHeight: height) {
+                    let maxDimensions = image.maxDimensions(width: width, height: height)
                     viewForImage(image)
-                        .framey(width: image.maxDimensions(width: width, height: height).width, height: image.maxDimensions(width: width, height: height).height, masterWidth: width, masterHeight: height, master: squared)
+                        .framey(width: maxDimensions.width, height: maxDimensions.height, masterWidth: width, masterHeight: height, master: squared)
                 }else if let width = width, let image = oldImage.downsampledImage(width: width) {
                     viewForImage(image)
                         .framey(width: width, height: image.fitHeight(for: width), masterWidth: width, masterHeight: height, master: squared)
