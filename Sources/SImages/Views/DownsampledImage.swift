@@ -76,7 +76,7 @@ internal extension DownsampledImage {
         self.oldImage = image
         self._height = State(wrappedValue: height)
         self._width = State(wrappedValue: width)
-        if height == nil || width != nil {
+        if height != nil || width != nil {
             self.dynamicSize = false
         }
         self.squared = squared
