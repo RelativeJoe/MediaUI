@@ -52,7 +52,7 @@ public struct DownsampledImage: View {
                     Color.clear
                 }
             }
-        }
+        }.clipped()
     }
 }
 
@@ -104,7 +104,7 @@ private extension DownsampledImage {
 public extension DownsampledImage {
 ///DownsampledImage: Make the Image take the Shape of a square.
     func squaredImage() -> Self {
-        DownsampledImage(image: oldImage, height: height, width: width, squared: true, aspectRatio: aspectRatio, resizable: resizable, content: placeHolder)
+        DownsampledImage(image: oldImage, height: height, width: width, squared: true, aspectRatio: (nil, .fill), resizable: resizable, content: placeHolder)
     }
 ///DownsampledImage: Sets the mode by which SwiftUI resizes an Image to fit it's space.
     func isResizable() -> Self {
