@@ -16,7 +16,7 @@ public struct DownsampledImage: View {
     private let squared: Bool
     private let resizable: Bool
     private let aspectRatio: (CGFloat?, ContentMode)?
-    @State var dynamicSize = true
+    var dynamicSize = true
     public var body: some View {
         content
             .onSizeChange { size in
@@ -76,6 +76,9 @@ internal extension DownsampledImage {
         self.oldImage = image
         self._height = State(wrappedValue: height)
         self._width = State(wrappedValue: width)
+        if height == nil || width != nil {
+            self.dynamicSize = false
+        }
         self.squared = squared
         self.aspectRatio = aspectRatio
         self.placeHolder = content
