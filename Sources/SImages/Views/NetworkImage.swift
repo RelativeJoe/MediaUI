@@ -40,7 +40,7 @@ public struct NetworkImage: View {
                         ActivityView()
                     }
                 case .error:
-                    errorView?(error)
+                    errorView?(error) ?? (placeHolder ?? AnyView(Text(error ?? "")))
             }
         }
     }
