@@ -67,17 +67,6 @@ public extension DownsampledImage {
     init(data: Data?, settings: ImageSettings = ImageSettings()) {
         self.data = data
         self._oldImage = State(wrappedValue: nil)
-        self._height = State(wrappedValue: nil)
-        self._width = State(wrappedValue: nil)
-        self.squared = false
-        self.aspectRatio = nil
-        self.resizable = false
-        self.placeHolder = nil
-    }
-///MediaUI: Initialize a DownsampledImage from a UNImage, & some optional settings.
-    init(image: UNImage?, settings: ImageSettings = ImageSettings()) {
-        self._oldImage = State(wrappedValue: image)
-        self.data = nil
         self._height = State(wrappedValue: settings.height)
         self._width = State(wrappedValue: settings.width)
         if settings.height != nil || settings.width != nil {
@@ -85,8 +74,22 @@ public extension DownsampledImage {
         }
         self.squared = settings.squared
         self.aspectRatio = settings.aspectRatio
-        self.placeHolder = settings.placeHolder
         self.resizable = settings.resizable
+        self.placeHolder = settings.placeHolder
+    }
+///MediaUI: Initialize a DownsampledImage from a UNImage, & some optional settings.
+    init(image: UNImage?, settings: ImageSettings = ImageSettings()) {
+        self._oldImage = State(wrappedValue: image)
+        self.data = nil
+        self._height = State(wrappedValue: settings.height)
+        self._width = State(wrappedValue: settings.width)
+        self.squared = settings.squared
+        self.aspectRatio = settings.aspectRatio
+        self.resizable = settings.resizable
+        self.placeHolder = settings.placeHolder
+        if settings.height != nil || settings.width != nil {
+            self.dynamicSize = false
+        }
     }
 }
 
@@ -97,12 +100,15 @@ public extension DownsampledImage {
     init(media: (any Mediable)?, settings: ImageSettings = ImageSettings()) {
         self.data = media?.data
         self._oldImage = State(wrappedValue: nil)
-        self._height = State(wrappedValue: nil)
-        self._width = State(wrappedValue: nil)
-        self.squared = false
-        self.aspectRatio = nil
-        self.resizable = false
-        self.placeHolder = nil
+        self._height = State(wrappedValue: settings.height)
+        self._width = State(wrappedValue: settings.width)
+        self.squared = settings.squared
+        self.aspectRatio = settings.aspectRatio
+        self.resizable = settings.resizable
+        self.placeHolder = settings.placeHolder
+        if settings.height != nil || settings.width != nil {
+            self.dynamicSize = false
+        }
     }
 }
 
