@@ -9,9 +9,9 @@ import SwiftUI
 import PhotosUI
 import STools
 
-///SImages: A MediaImage is a View that displays a default Image which can be tapped in order to present a PhotosPicker & dynamically display the picked Image in a Downsampled style.
+///MediaUI: A MediaImage is a View that displays a default Image which can be tapped in order to present a PhotosPicker & dynamically display the picked Image in a Downsampled style.
 @available(iOS 16.0, macOS 13.0, *)
-public struct MediaImage<Media: Mediabley>: View {
+public struct MediaImage<Media: Mediable>: View {
     @Binding private var overridenPickerItem: PhotosPickerItem?
     @Binding private var mediable: Media
     @State private var presentable = PresentableMedia()
@@ -60,7 +60,7 @@ public struct MediaImage<Media: Mediabley>: View {
 //MARK: - Public Initializer
 @available(iOS 16.0, macOS 13.0, *)
 public extension MediaImage {
-///SImages: Initialize a DownsampledImage from a Mediabley, or a Binding one.
+///MediaUI: Initialize a DownsampledImage from a Mediabley, or a Binding one.
     init(mediable: Binding<Media>) {
         self._mediable = mediable
         self.height = nil

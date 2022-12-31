@@ -8,7 +8,7 @@
 import SwiftUI
 import STools
 
-///SImages: A NetworkImage is a View that displays an Image from the internet in a Downsampled style.
+///MediaUI: A NetworkImage is a View that displays an Image from the internet in a Downsampled style.
 public struct NetworkImage: View {
     @State private var imageState = ImageState.idle
     @State private var error: String?
@@ -74,7 +74,7 @@ private extension NetworkImage {
 
 //MARK: - Public Initializers
 public extension NetworkImage {
-    ///SImages: Initialize a NetworkImage from a String.
+    ///MediaUI: Initialize a NetworkImage from a String.
     init(url: String?) {
         if let url {
             self.imageURL = URL(string: url)
@@ -88,7 +88,7 @@ public extension NetworkImage {
         self.loading = nil
         self.errorView = nil
     }
-    ///SImages: Initialize a NetworkImage from an URL.
+    ///MediaUI: Initialize a NetworkImage from an URL.
     init(url: URL?) {
         self.imageURL = url
         self.height = nil

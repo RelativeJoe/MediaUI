@@ -1,10 +1,9 @@
 // swift-tools-version: 5.6
-// The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
-    name: "SImages",
+    name: "MediaUI",
     platforms: [
            .iOS(.v13),
            .macOS(.v10_15),
@@ -12,15 +11,15 @@ let package = Package(
        ],
     products: [
         .library(
-            name: "SImages",
-            targets: ["SImages"]),
+            name: "MediaUI",
+            targets: ["MediaUI"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/TimmysApp/STools", "1.0.80"..<"2.0.0")
+        .package(url: "https://github.com/TimmysApp/STools", "1.0.81"..<"2.0.0")
     ],
     targets: [
         .target(
-            name: "SImages",
+            name: "MediaUI",
             dependencies: [
                 .product(name: "STools", package: "STools")
             ]),

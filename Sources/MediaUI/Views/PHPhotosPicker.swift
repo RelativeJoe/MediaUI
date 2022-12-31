@@ -11,8 +11,8 @@ import STools
 import UniformTypeIdentifiers
 import Combine
 
-#if canImport(Charts) || canImport(UIKi)//remove after macOS 13 goes public
-///SImages: SwiftUI wrapper for PHPickerViewController.
+#if canImport(Charts) || canImport(UIKi)
+///MediaUI: SwiftUI wrapper for PHPickerViewController.
 @available(iOS 14.0, macOS 13.0, *)
 public struct PHPhotosPicker {
     @Binding internal var isPresented: Bool
@@ -70,7 +70,7 @@ internal extension PHPhotosPicker {
 //MARK: - Internal Initializer
 @available(iOS 14.0, macOS 13.0, *)
 public extension PHPhotosPicker {
-///SImages: Presenting a PHPickerViewController to be used with phPickerItems for listening to picked items changes.
+///MediaUI: Presenting a PHPickerViewController to be used with phPickerItems for listening to picked items changes.
     init(isPresented: Binding<Bool>, filter: PHPickerFilter, selectionLimit: Int?, loading: PhotosPickerLoading, preferredAssetRepresentationMode: PHPickerConfiguration.AssetRepresentationMode) {
         self._isPresented = isPresented
         self.filter = filter
@@ -81,7 +81,7 @@ public extension PHPhotosPicker {
         self._result = .constant([])
         self.isBinding = false
     }
-///SImages: Presenting a PHPickerViewController.
+///MediaUI: Presenting a PHPickerViewController.
     init(isPresented: Binding<Bool>, pickerItems: Binding<[PHPickerItem]>, filter: PHPickerFilter, selectionLimit: Int?, loading: PhotosPickerLoading, preferredAssetRepresentationMode: PHPickerConfiguration.AssetRepresentationMode) {
         self._isPresented = isPresented
         self.filter = filter
@@ -92,7 +92,7 @@ public extension PHPhotosPicker {
         self._result = .constant([])
         self.isBinding = true
     }
-///SImages: Presenting a PHPickerViewController without any type of loading.
+///MediaUI: Presenting a PHPickerViewController without any type of loading.
     init(isPresented: Binding<Bool>, result: Binding<[PHPickerResult]>, filter: PHPickerFilter, selectionLimit: Int?, preferredAssetRepresentationMode: PHPickerConfiguration.AssetRepresentationMode) {
         self._isPresented = isPresented
         self.filter = filter
@@ -232,16 +232,16 @@ public enum PHPhotosPickerStyle {
 #endif
 }
 
-///SImages: A type to represent PhotosPicker loading.
+///MediaUI: A type to represent PhotosPicker loading.
 @available(iOS 14.0, macOS 13.0, *)
 public enum PhotosPickerLoading {
-///SImages: Load all the images without an empty placeholder array..
+///MediaUI: Load all the images without an empty placeholder array..
     case batch
-///SImages: Load all the images with an empty placeholder array..
+///MediaUI: Load all the images with an empty placeholder array..
     case emptyBatch
-///SImages: Load a single Image directly without an empty placeholder.
+///MediaUI: Load a single Image directly without an empty placeholder.
     case single
-///SImages: Load a single Image directly with an empty placeholder.
+///MediaUI: Load a single Image directly with an empty placeholder.
     case emptySingle
 }
 #endif

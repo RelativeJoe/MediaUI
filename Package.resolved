@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/TimmysApp/STools",
       "state" : {
-        "revision" : "438bdfb7b83f4ed1443af915132429c763362319",
-        "version" : "1.0.80"
+        "revision" : "ea876036fc53be40f564b24d3c267b447416dc1d",
+        "version" : "1.0.81"
       }
     }
   ],

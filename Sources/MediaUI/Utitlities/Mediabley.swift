@@ -8,10 +8,10 @@
 import SwiftUI
 import PhotosUI
 
-///SImages: Conform your media model to Mediabley in order for it to be used alongside PhotosPicker.
+///MediaUI: Conform your media model to Mediabley in order for it to be used alongside PhotosPicker.
 @available(iOS 16.0, macOS 13.0, *)
-public protocol Mediabley: Identifiable, Hashable, Equatable {
-    var id: UUID {get set}
+public protocol Mediable: Identifiable, Hashable, Equatable {
+    var id: UUID? {get set}
     var data: Data {get set}
     static var empty: Self {get}
 }
