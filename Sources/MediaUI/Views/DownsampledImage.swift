@@ -68,6 +68,22 @@ public extension DownsampledImage {
         self.resizable = false
         self.placeHolder = nil
     }
+    init(image: UNImage?, settings: ImageSettings) {
+        self.oldImage = image
+        self._height = State(wrappedValue: settings.height)
+        self._width = State(wrappedValue: settings.width)
+        if settings.height != nil || settings.width != nil {
+            self.dynamicSize = false
+        }
+        self.squared = settings.squared
+        self.aspectRatio = settings.aspectRatio
+        self.placeHolder = settings.placeHolder
+        self.resizable = settings.resizable
+    }
+}
+
+//MARK: - Internal Initializer
+internal extension DownsampledImage {
     init(image: UNImage?, height: CGFloat?, width: CGFloat?, squared: Bool, aspectRatio: (CGFloat?, ContentMode)?, resizable: Bool, content: AnyView?) {
         self.oldImage = image
         self._height = State(wrappedValue: height)
