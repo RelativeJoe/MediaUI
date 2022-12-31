@@ -4,7 +4,7 @@
 //
 //  Created by Joe Maghzal on 8/5/22.
 //
-
+#if canImport(UIKit) || canImport(Charts)
 import SwiftUI
 import PhotosUI
 import STools
@@ -156,3 +156,4 @@ public extension MediaSet {
         MediaSet(isPresented: $isPresented, content: $content, filter: filter, encoding: encoding, maxSelectionCount: maxSelectionCount, behavior: behavior, library: library, contentForLoading: contentForLoading, contentForMedia: contentForMedia, overiddenItems: items, override: true)
     }
 }
+#endif

@@ -4,7 +4,7 @@
 //
 //  Created by Joe Maghzal on 6/17/22.
 //
-
+#if canImport(UIKit) || canImport(Charts)
 import SwiftUI
 import PhotosUI
 import STools
@@ -161,3 +161,4 @@ public extension MediaImage {
         MediaImage(mediable: $mediable, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, disabled: disabledPicker, content: placeHolder, item: item, override: true)
     }
 }
+#endif

@@ -37,7 +37,9 @@ public struct NetworkImage: View {
                     if let loading {
                         loading
                     }else {
+                        #if canImport(UIKit)
                         ActivityView()
+                        #endif
                     }
                 case .error:
                     errorView?(error) ?? (placeHolder ?? AnyView(Text(error ?? "")))

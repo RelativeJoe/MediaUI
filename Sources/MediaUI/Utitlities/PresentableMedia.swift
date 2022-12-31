@@ -5,6 +5,7 @@
 //  Created by Joe Maghzal on 7/30/22.
 //
 
+#if canImport(UIKit) || canImport(Charts)
 import SwiftUI
 import PhotosUI
 
@@ -16,3 +17,4 @@ internal struct PresentableMedia: Hashable {
     var mediaState = MediaState.empty
     var pickerItem: PhotosPickerItem?
 }
+#endif
