@@ -12,18 +12,20 @@ import STools
 ///MediaUI: A MediaImage is a View that displays a default Image which can be tapped in order to present a PhotosPicker & dynamically display the picked Image in a Downsampled style.
 @available(iOS 16.0, macOS 13.0, *)
 public struct MediaImage<Media: Mediable>: View {
-    public var settings = ImageSettings()
+//MARK: - Properties
     @Binding private var overridenPickerItem: PhotosPickerItem?
     @Binding private var mediable: Media
     @State private var presentable = PresentableMedia()
     private var overridePicker = false
     private let disabledPicker: Bool
+    public var settings = ImageSettings()
+//MARK: - View
     public var body: some View {
         Button(action: {
             presentable.isPresented.toggle()
         }) {
             if let mediable = mediable, mediable.data != Data() {
-                DownsampledImage(image: AnyImage(mediable.data).unImage, settings: settings)
+                DownsampledImage(media: mediable, settings: settings)
             }else {
                 switch presentable.mediaState {
                     case .failure(let error):
@@ -37,18 +39,18 @@ public struct MediaImage<Media: Mediable>: View {
                 }
             }
         }.disabled(disabledPicker)
-            .stateModifier(overridePicker) { view in
-                view
-                    .onChange(of: overridenPickerItem) { newValue in
-                        updateState(pickerItem: newValue)
-                    }
-            }.stateModifier(!overridePicker) { view in
-                view
-                    .photosPicker(isPresented: $presentable.isPresented, selection: $presentable.pickerItem, matching: .images)
-                    .onChange(of: presentable.pickerItem) { newValue in
-                        updateState(pickerItem: newValue)
-                    }
-            }
+        .stateModifier(overridePicker) { view in
+            view
+                .onChange(of: overridenPickerItem) { newValue in
+                    updateState(pickerItem: newValue)
+                }
+        }.stateModifier(!overridePicker) { view in
+            view
+                .photosPicker(isPresented: $presentable.isPresented, selection: $presentable.pickerItem, matching: .images)
+                .onChange(of: presentable.pickerItem) { newValue in
+                    updateState(pickerItem: newValue)
+                }
+        }
     }
 }
 

@@ -245,4 +245,3 @@ public enum PhotosPickerLoading {
     case emptySingle
 }
 #endif
-

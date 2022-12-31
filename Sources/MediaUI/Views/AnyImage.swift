@@ -15,6 +15,7 @@ public struct AnyImage: View {
     public var data: Data?
     public var image: Image?
     public var unImage: UNImage?
+//MARK: - View
     public var body: some View {
         image ?? Image("photo.fill")
     }

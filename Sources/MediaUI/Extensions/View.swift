@@ -5,10 +5,10 @@
 //  Created by Joe Maghzal on 8/7/22.
 //
 
+#if canImport(Charts) || canImport(UIKi)
 import SwiftUI
 import PhotosUI
 
-#if canImport(Charts) || canImport(UIKi)//remove after macOS 13 goes public
 @available(iOS 14.0, macOS 13.0, *)
 public extension View {
 #if canImport(UIKit)

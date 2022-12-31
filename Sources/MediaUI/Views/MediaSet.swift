@@ -12,6 +12,7 @@ import STools
 ///MediaUI: A MediaSet is a collection of Photos picked by the user. You can place it inside an HStack, VStack, LazyVGrid, LazyHGrid...
 @available(iOS 16.0, macOS 13.0, *)
 public struct MediaSet<Medias: Mediable, Content: View>: View {
+//MARK: - Properties
     @Binding private var overridenPickerItems: [PhotosPickerItem]
     @Binding private var isPresented: Bool
     @Binding private var content: [Medias]
@@ -24,6 +25,7 @@ public struct MediaSet<Medias: Mediable, Content: View>: View {
     private let library: PHPhotoLibrary
     private var contentForLoading: (() -> Content)?
     private var contentForMedia: ((DownsampledImage, Medias, Int) -> Content)?
+//MARK: - View
     public var body: some View {
         Group {
             if content.isEmpty {

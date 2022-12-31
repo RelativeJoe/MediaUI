@@ -10,13 +10,15 @@ import STools
 
 ///MediaUI: A NetworkImage is a View that displays an Image from the internet in a Downsampled style.
 public struct NetworkImage: View {
-    public var settings = ImageSettings()
-    @State private var imageState = ImageState.idle
+//MARK: - Properties
+    @State private var imageState = ImageState.loading
     @State private var error: String?
     @State private var unImage: UNImage?
     private var imageURL: URL?
     private let loading: AnyView?
     private let errorView: ((String?) -> AnyView)?
+    public var settings = ImageSettings()
+//MARK: - View
     public var body: some View {
         content
             .onTask {

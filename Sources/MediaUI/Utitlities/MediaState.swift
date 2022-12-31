@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+
 ///MediaUI: Respresentation of the state of an image.
 public enum MediaState {
     case empty, loading, success(AnyImage), failure(Error)

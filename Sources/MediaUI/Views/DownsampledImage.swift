@@ -9,15 +9,17 @@ import STools
 
 ///MediaUI: A DownsampledImage is a View that displays an Image in a Downsampled style.
 public struct DownsampledImage: View {
-    private var data: Data?
+//MARK: - Properties
     @State private var oldImage: UNImage?
     @State private var height: CGFloat?
     @State private var width: CGFloat?
+    private var data: Data?
+    private var dynamicSize = true
     private let placeHolder: AnyView?
     private let squared: Bool
     private let resizable: Bool
     private let aspectRatio: (CGFloat?, ContentMode)?
-    var dynamicSize = true
+//MARK: - View
     public var body: some View {
         content
             .clipped()
@@ -45,18 +47,10 @@ public struct DownsampledImage: View {
                 viewForImage(image)
                     .framey(width: image.fitWidth(for: height), height: height, masterWidth: width, masterHeight: height, master: squared)
             }else {
-                if let placeHolder {
-                    placeHolder
-                }else {
-                    Color.clear
-                }
+                placeHolder ?? AnyView(Color.clear)
             }
         }else {
-            if let placeHolder {
-                placeHolder
-            }else {
-                Color.clear
-            }
+            placeHolder ?? AnyView(Color.clear)
         }
     }
 }

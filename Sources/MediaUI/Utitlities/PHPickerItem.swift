@@ -5,16 +5,18 @@
 //  Created by Joe Maghzal on 8/8/22.
 //
 
+#if canImport(Charts) || canImport(UIKi)
 import Foundation
 
-#if canImport(Charts) || canImport(UIKi)//remove after macOS 13 goes public
 @available(iOS 14.0, macOS 13.0, *)
 public struct PHPickerItem: Identifiable {
+//MARK: - Properties
     public var id = UUID()
-    var itemType: ItemType?
-    var error: Error?
+    internal var itemType: ItemType?
+    internal var error: Error?
     static public let empty = PHPickerItem()
-    func getItemType() throws -> ItemType {
+//MARK: - Functions
+    internal func getItemType() throws -> ItemType {
         guard let itemType = itemType else {
             guard let error = error else {
                 throw ItemError.unexpected
@@ -25,6 +27,7 @@ public struct PHPickerItem: Identifiable {
     }
 }
 
+//MARK: - Equatable
 @available(iOS 14.0, macOS 13.0, *)
 extension PHPickerItem: Equatable {
     public static func == (lhs: PHPickerItem, rhs: PHPickerItem) -> Bool {
