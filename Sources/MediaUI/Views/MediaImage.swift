@@ -58,12 +58,6 @@ public extension MediaImage {
 ///MediaUI: Initialize a DownsampledImage from a Mediabley, or a Binding one.
     init(mediable: Binding<Media>) {
         self._mediable = mediable
-//        self.height = nil
-//        self.width = nil
-//        self.squared = false
-//        self.aspectRatio = nil
-//        self.resizable = false
-//        self.placeHolder = nil
         self.disabledPicker = false
         self.overridePicker = false
         self._overridenPickerItem = .constant(nil)
@@ -75,12 +69,6 @@ public extension MediaImage {
 private extension MediaImage {
     init(mediable: Binding<Media>, height: CGFloat?, width: CGFloat?, squared: Bool, aspectRatio: (CGFloat?, ContentMode)?, resizable: Bool, disabled: Bool, content: AnyView?, item: Binding<PhotosPickerItem?>, override: Bool) {
         self._mediable = mediable
-//        self.height = height
-//        self.width = width
-//        self.squared = squared
-//        self.aspectRatio = aspectRatio
-//        self.placeHolder = content
-//        self.resizable = resizable
         self.disabledPicker = disabled
         self.overridePicker = override
         self._overridenPickerItem = item
