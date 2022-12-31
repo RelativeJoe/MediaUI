@@ -58,9 +58,9 @@ public struct DownsampledImage: View {
 
 //MARK: - Public Initializer
 public extension DownsampledImage {
-///MediaUI: Initialize a DownsampledImage from a UNImage, or a Binding one.
-    init(image: UNImage?) {
-        self.oldImage = image
+///MediaUI: Initialize a DownsampledImage from Data, & some optional settings.
+    init(data: Data?, settings: ImageSettings = ImageSettings()) {
+        self.oldImage = UNImage(data: data ?? Data())
         self._height = State(wrappedValue: nil)
         self._width = State(wrappedValue: nil)
         self.squared = false
@@ -68,7 +68,8 @@ public extension DownsampledImage {
         self.resizable = false
         self.placeHolder = nil
     }
-    init(image: UNImage?, settings: ImageSettings) {
+///MediaUI: Initialize a DownsampledImage from a UNImage, & some optional settings.
+    init(image: UNImage?, settings: ImageSettings = ImageSettings()) {
         self.oldImage = image
         self._height = State(wrappedValue: settings.height)
         self._width = State(wrappedValue: settings.width)
@@ -79,6 +80,21 @@ public extension DownsampledImage {
         self.aspectRatio = settings.aspectRatio
         self.placeHolder = settings.placeHolder
         self.resizable = settings.resizable
+    }
+}
+
+//MARK: - Public Initializer
+@available(macOS 13.0, *)
+public extension DownsampledImage {
+///MediaUI: Initialize a DownsampledImage from Mediable, & some optional settings.
+    init(media: (any Mediable)?, settings: ImageSettings = ImageSettings()) {
+        self.oldImage = UNImage(data: media?.data ?? Data())
+        self._height = State(wrappedValue: nil)
+        self._width = State(wrappedValue: nil)
+        self.squared = false
+        self.aspectRatio = nil
+        self.resizable = false
+        self.placeHolder = nil
     }
 }
 
