@@ -116,7 +116,7 @@ public extension NetworkImage {
     }
     ///NetworkImage: Positions this View within an invisible frame with the specified size.
     func frame(width: CGFloat? = nil, height: CGFloat? = nil) -> Self  {
-        NetworkImage(imageState: imageState, error: error, unImage: unImage, imageURL: imageURL, height: settings.height, width: settings.width, placeHolder: settings.placeHolder, squared: settings.squared, resizable: settings.resizable, aspectRatio: settings.aspectRatio, loading: loading, errorView: errorView)
+        NetworkImage(imageState: imageState, error: error, unImage: unImage, imageURL: imageURL, height: height, width: width, placeHolder: settings.placeHolder, squared: settings.squared, resizable: settings.resizable, aspectRatio: settings.aspectRatio, loading: loading, errorView: errorView)
     }
     ///NetworkImage: Adds a placeholder View if no Image can be displayed.
     func placeHolder(@ViewBuilder placeholder: () -> some View) -> Self {

@@ -9,7 +9,8 @@ import STools
 
 ///MediaUI: A DownsampledImage is a View that displays an Image in a Downsampled style.
 public struct DownsampledImage: View {
-    private var oldImage: UNImage?
+    private var data: Data?
+    @State private var oldImage: UNImage?
     @State private var height: CGFloat?
     @State private var width: CGFloat?
     private let placeHolder: AnyView?
@@ -19,32 +20,30 @@ public struct DownsampledImage: View {
     var dynamicSize = true
     public var body: some View {
         content
-            .onSizeChange { size in
-                guard dynamicSize else {return}
-                height = size.height
-                width = size.width
+            .clipped()
+            .stateModifier(dynamicSize) { view in
+                view
+                    .onSizeChange { size in
+                        height = size.height
+                        width = size.width
+                    }
+            }.onAppear {
+                guard let data else {return}
+                oldImage = UNImage(data: data)
             }
     }
-    var content: some View {
-        Group {
-            if let oldImage = oldImage {
-                if let width = width, let height = height, let image = oldImage.downsampledImage(maxWidth: width, maxHeight: height) {
-                    let maxDimensions = image.maxDimensions(width: width, height: height)
-                    viewForImage(image)
-                        .framey(width: maxDimensions.width, height: maxDimensions.height, masterWidth: width, masterHeight: height, master: squared)
-                }else if let width = width, let image = oldImage.downsampledImage(width: width) {
-                    viewForImage(image)
-                        .framey(width: width, height: image.fitHeight(for: width), masterWidth: width, masterHeight: height, master: squared)
-                }else if let height = height, let image = oldImage.downsampledImage(height: height) {
-                    viewForImage(image)
-                        .framey(width: image.fitWidth(for: height), height: height, masterWidth: width, masterHeight: height, master: squared)
-                }else {
-                    if let placeHolder {
-                        placeHolder
-                    }else {
-                        Color.clear
-                    }
-                }
+    @ViewBuilder var content: some View {
+        if let oldImage = oldImage {
+            if let width = width, let height = height, let image = oldImage.downsampledImage(maxWidth: width, maxHeight: height) {
+                let maxDimensions = image.maxDimensions(width: width, height: height)
+                viewForImage(image)
+                    .framey(width: maxDimensions.width, height: maxDimensions.height, masterWidth: width, masterHeight: height, master: squared)
+            }else if let width = width, let image = oldImage.downsampledImage(width: width) {
+                viewForImage(image)
+                    .framey(width: width, height: image.fitHeight(for: width), masterWidth: width, masterHeight: height, master: squared)
+            }else if let height = height, let image = oldImage.downsampledImage(height: height) {
+                viewForImage(image)
+                    .framey(width: image.fitWidth(for: height), height: height, masterWidth: width, masterHeight: height, master: squared)
             }else {
                 if let placeHolder {
                     placeHolder
@@ -52,7 +51,13 @@ public struct DownsampledImage: View {
                     Color.clear
                 }
             }
-        }.clipped()
+        }else {
+            if let placeHolder {
+                placeHolder
+            }else {
+                Color.clear
+            }
+        }
     }
 }
 
@@ -60,7 +65,8 @@ public struct DownsampledImage: View {
 public extension DownsampledImage {
 ///MediaUI: Initialize a DownsampledImage from Data, & some optional settings.
     init(data: Data?, settings: ImageSettings = ImageSettings()) {
-        self.oldImage = UNImage(data: data ?? Data())
+        self.data = data
+        self._oldImage = State(wrappedValue: nil)
         self._height = State(wrappedValue: nil)
         self._width = State(wrappedValue: nil)
         self.squared = false
@@ -70,7 +76,8 @@ public extension DownsampledImage {
     }
 ///MediaUI: Initialize a DownsampledImage from a UNImage, & some optional settings.
     init(image: UNImage?, settings: ImageSettings = ImageSettings()) {
-        self.oldImage = image
+        self._oldImage = State(wrappedValue: image)
+        self.data = nil
         self._height = State(wrappedValue: settings.height)
         self._width = State(wrappedValue: settings.width)
         if settings.height != nil || settings.width != nil {
@@ -88,7 +95,8 @@ public extension DownsampledImage {
 public extension DownsampledImage {
 ///MediaUI: Initialize a DownsampledImage from Mediable, & some optional settings.
     init(media: (any Mediable)?, settings: ImageSettings = ImageSettings()) {
-        self.oldImage = UNImage(data: media?.data ?? Data())
+        self.data = media?.data
+        self._oldImage = State(wrappedValue: nil)
         self._height = State(wrappedValue: nil)
         self._width = State(wrappedValue: nil)
         self.squared = false
