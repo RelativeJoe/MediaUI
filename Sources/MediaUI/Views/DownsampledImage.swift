@@ -84,7 +84,7 @@ public extension DownsampledImage {
 }
 
 //MARK: - Public Initializer
-@available(macOS 13.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 public extension DownsampledImage {
 ///MediaUI: Initialize a DownsampledImage from Mediable, & some optional settings.
     init(media: (any Mediable)?, settings: ImageSettings = ImageSettings()) {
