@@ -176,6 +176,6 @@ public extension DownsampledImage {
     }
 }
 
-extension CGFloat {
+public extension CGFloat {
     static let dynamic: CGFloat = 999999999
 }
