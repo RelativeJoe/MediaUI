@@ -14,7 +14,7 @@ public struct DownsampledImage: View {
     @State private var height: CGFloat?
     @State private var width: CGFloat?
     private var data: Data?
-    private var dynamicSizes = [SizeChange.width, SizeChange.height]
+    private var dynamicSizes = [SizeChange]()
     private let placeHolder: AnyView?
     private let squared: Bool
     private let resizable: Bool
