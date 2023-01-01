@@ -24,7 +24,7 @@ public struct DownsampledImage: View {
         GeometryReader { reader in
             content
                 .clipped()
-                .onChange(of: reader.frame(in: .global).size) { size in
+                .change(of: reader.frame(in: .global).size) { size in
                     if dynamicSizes.contains(.height) {
                         height = size.height
                     }
