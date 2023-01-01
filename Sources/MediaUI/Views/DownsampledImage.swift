@@ -14,7 +14,7 @@ public struct DownsampledImage: View {
     @State private var height: CGFloat?
     @State private var width: CGFloat?
     private var data: Data?
-    private var dynamicSize = true
+    private var dynamicSizes = [SizeChange.width, SizeChange.height]
     private let placeHolder: AnyView?
     private let squared: Bool
     private let resizable: Bool
@@ -23,11 +23,15 @@ public struct DownsampledImage: View {
     public var body: some View {
         content
             .clipped()
-            .stateModifier(dynamicSize) { view in
+            .stateModifier(!dynamicSizes.isEmpty) { view in
                 view
                     .onSizeChange { size in
-                        height = size.height
-                        width = size.width
+                        if dynamicSizes.contains(.height) {
+                            height = size.height
+                        }
+                        if dynamicSizes.contains(.width) {
+                            width = size.width
+                        }
                     }
             }.onAppear {
                 guard let data else {return}
@@ -63,8 +67,11 @@ public extension DownsampledImage {
         self._oldImage = State(wrappedValue: nil)
         self._height = State(wrappedValue: settings.height)
         self._width = State(wrappedValue: settings.width)
-        if settings.height != nil || settings.width != nil {
-            self.dynamicSize = false
+        if settings.height == .dynamic || (settings.height == nil && settings.width == nil) {
+            self.dynamicSizes.append(.height)
+        }
+        if settings.width == .dynamic || (settings.height == nil && settings.width == nil) {
+            self.dynamicSizes.append(.width)
         }
         self.squared = settings.squared
         self.aspectRatio = settings.aspectRatio
@@ -81,8 +88,11 @@ public extension DownsampledImage {
         self.aspectRatio = settings.aspectRatio
         self.resizable = settings.resizable
         self.placeHolder = settings.placeHolder
-        if settings.height != nil || settings.width != nil {
-            self.dynamicSize = false
+        if settings.height == .dynamic || (settings.height == nil && settings.width == nil) {
+            self.dynamicSizes.append(.height)
+        }
+        if settings.width == .dynamic || (settings.height == nil && settings.width == nil) {
+            self.dynamicSizes.append(.width)
         }
     }
 }
@@ -100,8 +110,11 @@ public extension DownsampledImage {
         self.aspectRatio = settings.aspectRatio
         self.resizable = settings.resizable
         self.placeHolder = settings.placeHolder
-        if settings.height != nil || settings.width != nil {
-            self.dynamicSize = false
+        if settings.height == .dynamic || (settings.height == nil && settings.width == nil) {
+            self.dynamicSizes.append(.height)
+        }
+        if settings.width == .dynamic || (settings.height == nil && settings.width == nil) {
+            self.dynamicSizes.append(.width)
         }
     }
 }
@@ -112,13 +125,16 @@ internal extension DownsampledImage {
         self.oldImage = image
         self._height = State(wrappedValue: height)
         self._width = State(wrappedValue: width)
-        if height != nil || width != nil {
-            self.dynamicSize = false
-        }
         self.squared = squared
         self.aspectRatio = aspectRatio
         self.placeHolder = content
         self.resizable = resizable
+        if height == .dynamic || (height == nil && width == nil) {
+            self.dynamicSizes.append(.height)
+        }
+        if width == .dynamic || (height == nil && width == nil) {
+            self.dynamicSizes.append(.width)
+        }
     }
 }
 
@@ -158,4 +174,8 @@ public extension DownsampledImage {
     func placeHolder(@ViewBuilder placeholder: () -> some View) -> Self {
         DownsampledImage(image: oldImage, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, content: AnyView(placeholder()))
     }
+}
+
+extension CGFloat {
+    static let dynamic: CGFloat = 999999999
 }
