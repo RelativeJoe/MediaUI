@@ -67,16 +67,17 @@ public extension DownsampledImage {
         self._oldImage = State(wrappedValue: nil)
         self._height = State(wrappedValue: settings.height)
         self._width = State(wrappedValue: settings.width)
+        self.squared = settings.squared
+        self.aspectRatio = settings.aspectRatio
+        self.resizable = settings.resizable
+        self.placeHolder = settings.placeHolder
+        self.dynamicSizes = [SizeChange]()
         if settings.height == .dynamic || (settings.height == nil && settings.width == nil) {
             self.dynamicSizes.append(.height)
         }
         if settings.width == .dynamic || (settings.height == nil && settings.width == nil) {
             self.dynamicSizes.append(.width)
         }
-        self.squared = settings.squared
-        self.aspectRatio = settings.aspectRatio
-        self.resizable = settings.resizable
-        self.placeHolder = settings.placeHolder
     }
 ///MediaUI: Initialize a DownsampledImage from a UNImage, & some optional settings.
     init(image: UNImage?, settings: ImageSettings = ImageSettings()) {
@@ -88,6 +89,7 @@ public extension DownsampledImage {
         self.aspectRatio = settings.aspectRatio
         self.resizable = settings.resizable
         self.placeHolder = settings.placeHolder
+        self.dynamicSizes = [SizeChange]()
         if settings.height == .dynamic || (settings.height == nil && settings.width == nil) {
             self.dynamicSizes.append(.height)
         }
@@ -110,6 +112,7 @@ public extension DownsampledImage {
         self.aspectRatio = settings.aspectRatio
         self.resizable = settings.resizable
         self.placeHolder = settings.placeHolder
+        self.dynamicSizes = [SizeChange]()
         if settings.height == .dynamic || (settings.height == nil && settings.width == nil) {
             self.dynamicSizes.append(.height)
         }
@@ -129,6 +132,7 @@ internal extension DownsampledImage {
         self.aspectRatio = aspectRatio
         self.placeHolder = content
         self.resizable = resizable
+        self.dynamicSizes = [SizeChange]()
         if height == .dynamic || (height == nil && width == nil) {
             self.dynamicSizes.append(.height)
         }
