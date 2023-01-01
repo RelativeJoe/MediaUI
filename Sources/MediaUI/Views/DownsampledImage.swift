@@ -21,8 +21,7 @@ public struct DownsampledImage: View {
     private let aspectRatio: (CGFloat?, ContentMode)?
 //MARK: - View
     public var body: some View {
-        content
-            .clipped()
+        Color.clear
             .stateModifier(!dynamicSizes.isEmpty) { view in
                 view
                     .onSizeChange { size in
@@ -33,7 +32,10 @@ public struct DownsampledImage: View {
                             width = size.width
                         }
                     }
-            }.onAppear {
+            }
+        content
+            .clipped()
+            .onAppear {
                 guard let data else {return}
                 oldImage = UNImage(data: data)
             }
