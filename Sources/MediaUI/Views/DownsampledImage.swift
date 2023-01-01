@@ -21,24 +21,21 @@ public struct DownsampledImage: View {
     private let aspectRatio: (CGFloat?, ContentMode)?
 //MARK: - View
     public var body: some View {
-        Color.clear
-            .stateModifier(!dynamicSizes.isEmpty) { view in
-                view
-                    .onSizeChange { size in
-                        if dynamicSizes.contains(.height) {
-                            height = size.height
-                        }
-                        if dynamicSizes.contains(.width) {
-                            width = size.width
-                        }
+        GeometryReader { reader in
+            content
+                .clipped()
+                .onChange(of: reader.frame(in: .global).size) { size in
+                    if dynamicSizes.contains(.height) {
+                        height = size.height
                     }
-            }
-        content
-            .clipped()
-            .onAppear {
-                guard let data else {return}
-                oldImage = UNImage(data: data)
-            }
+                    if dynamicSizes.contains(.width) {
+                        width = size.width
+                    }
+                }.onAppear {
+                    guard let data else {return}
+                    oldImage = UNImage(data: data)
+                }
+        }
     }
     @ViewBuilder var content: some View {
         if let oldImage = oldImage {
