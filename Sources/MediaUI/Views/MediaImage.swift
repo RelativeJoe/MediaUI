@@ -26,19 +26,19 @@ public struct MediaImage<Media: Mediable>: View {
         Button(action: {
             presentable.isPresented.toggle()
         }) {
-            if let mediable = mediable, mediable.data != Data() && presentable.mediaState == .empty {
-                DownsampledImage(media: mediable, settings: settings)
-            }else {
-                switch presentable.mediaState {
-                    case .failure(let error):
-                        Text(error.localizedDescription)
-                    case .loading:
-                        ProgressView()
-                    case .success(let anyImage):
-                        DownsampledImage(image: anyImage.unImage, settings: settings)
-                    default:
+            switch presentable.mediaState {
+                case .failure(let error):
+                    Text(error.localizedDescription)
+                case .loading:
+                    ProgressView()
+                case .success(let anyImage):
+                    DownsampledImage(image: anyImage.unImage, settings: settings)
+                case .empty:
+                    if let mediable = mediable, mediable.data != Data() {
+                        DownsampledImage(media: mediable, settings: settings)
+                    }else {
                         settings.placeHolder
-                }
+                    }
             }
         }.disabled(disabledPicker)
         .stateModifier(overridePicker) { view in
