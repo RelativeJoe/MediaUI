@@ -58,8 +58,8 @@ private extension NetworkImage {
             unImage = image
             imageState = .idle
         }else {
+            imageState = .loading
             do {
-                imageState = .loading
                 let data = try await URLSession.shared.data(from: imageURL).0
                 unImage = UNImage(data: data)
                 imageState = .idle
