@@ -27,7 +27,7 @@ public struct MediaImage<Media: Mediable>: View {
             presentable.isPresented.toggle()
         }) {
             if let mediable = mediable, mediable.data != Data() {
-                DownsampledImage(media: mediable, settings: settings)
+                DownsampledImage(image: mediable.data.unImage, settings: settings)
             }else {
                 switch presentable.mediaState {
                     case .failure(let error):
