@@ -14,28 +14,25 @@ public struct DownsampledImage: View {
     @State private var height: CGFloat?
     @State private var width: CGFloat?
     private var data: Data?
-    private var dynamicSizes = [SizeChange]()
+    private var dynamicSize = true
     private let placeHolder: AnyView?
     private let squared: Bool
     private let resizable: Bool
     private let aspectRatio: (CGFloat?, ContentMode)?
 //MARK: - View
     public var body: some View {
-        GeometryReader { reader in
-            content
-                .clipped()
-                .change(of: reader.frame(in: .global).size) { size in
-                    if dynamicSizes.contains(.height) {
+        content
+            .clipped()
+            .stateModifier(dynamicSize) { view in
+                view
+                    .onSizeChange { size in
                         height = size.height
-                    }
-                    if dynamicSizes.contains(.width) {
                         width = size.width
                     }
-                }.onAppear {
-                    guard let data else {return}
-                    oldImage = UNImage(data: data)
-                }
-        }
+            }.onAppear {
+                guard let data else {return}
+                oldImage = UNImage(data: data)
+            }
     }
     @ViewBuilder var content: some View {
         if let oldImage = oldImage {
@@ -66,17 +63,13 @@ public extension DownsampledImage {
         self._oldImage = State(wrappedValue: nil)
         self._height = State(wrappedValue: settings.height)
         self._width = State(wrappedValue: settings.width)
+        if settings.height != nil || settings.width != nil {
+            self.dynamicSize = false
+        }
         self.squared = settings.squared
         self.aspectRatio = settings.aspectRatio
         self.resizable = settings.resizable
         self.placeHolder = settings.placeHolder
-        self.dynamicSizes = [SizeChange]()
-        if settings.height == .dynamic || (settings.height == nil && settings.width == nil) {
-            self.dynamicSizes.append(.height)
-        }
-        if settings.width == .dynamic || (settings.height == nil && settings.width == nil) {
-            self.dynamicSizes.append(.width)
-        }
     }
 ///MediaUI: Initialize a DownsampledImage from a UNImage, & some optional settings.
     init(image: UNImage?, settings: ImageSettings = ImageSettings()) {
@@ -88,12 +81,8 @@ public extension DownsampledImage {
         self.aspectRatio = settings.aspectRatio
         self.resizable = settings.resizable
         self.placeHolder = settings.placeHolder
-        self.dynamicSizes = [SizeChange]()
-        if settings.height == .dynamic || (settings.height == nil && settings.width == nil) {
-            self.dynamicSizes.append(.height)
-        }
-        if settings.width == .dynamic || (settings.height == nil && settings.width == nil) {
-            self.dynamicSizes.append(.width)
+        if settings.height != nil || settings.width != nil {
+            self.dynamicSize = false
         }
     }
 }
@@ -111,12 +100,8 @@ public extension DownsampledImage {
         self.aspectRatio = settings.aspectRatio
         self.resizable = settings.resizable
         self.placeHolder = settings.placeHolder
-        self.dynamicSizes = [SizeChange]()
-        if settings.height == .dynamic || (settings.height == nil && settings.width == nil) {
-            self.dynamicSizes.append(.height)
-        }
-        if settings.width == .dynamic || (settings.height == nil && settings.width == nil) {
-            self.dynamicSizes.append(.width)
+        if settings.height != nil || settings.width != nil {
+            self.dynamicSize = false
         }
     }
 }
@@ -127,17 +112,13 @@ internal extension DownsampledImage {
         self.oldImage = image
         self._height = State(wrappedValue: height)
         self._width = State(wrappedValue: width)
+        if height != nil || width != nil {
+            self.dynamicSize = false
+        }
         self.squared = squared
         self.aspectRatio = aspectRatio
         self.placeHolder = content
         self.resizable = resizable
-        self.dynamicSizes = [SizeChange]()
-        if height == .dynamic || (height == nil && width == nil) {
-            self.dynamicSizes.append(.height)
-        }
-        if width == .dynamic || (height == nil && width == nil) {
-            self.dynamicSizes.append(.width)
-        }
     }
 }
 
@@ -177,8 +158,4 @@ public extension DownsampledImage {
     func placeHolder(@ViewBuilder placeholder: () -> some View) -> Self {
         DownsampledImage(image: oldImage, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, content: AnyView(placeholder()))
     }
-}
-
-public extension CGFloat {
-    static let dynamic: CGFloat = 999999999
 }
