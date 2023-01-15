@@ -49,6 +49,7 @@ public struct NetworkImage: View {
 private extension NetworkImage {
     func load() async {
         guard unImage == nil else {return}
+        imageState = .loading
         guard let imageURL else {
             error = "Invalid Image URL"
             imageState = .error
@@ -58,7 +59,6 @@ private extension NetworkImage {
             unImage = image
             imageState = .idle
         }else {
-            imageState = .loading
             do {
                 let data = try await URLSession.shared.data(from: imageURL).0
                 unImage = UNImage(data: data)
