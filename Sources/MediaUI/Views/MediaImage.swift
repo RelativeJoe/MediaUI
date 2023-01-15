@@ -72,6 +72,7 @@ public extension MediaImage {
         self.overridePicker = false
         self.bindPresentation = false
         self._overridenPickerItem = .constant(nil)
+        self._isPresented = .constant(false)
     }
 }
 
@@ -148,7 +149,7 @@ public extension MediaImage {
         MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabledPicker, content: settings.placeHolder, item: item, override: true, isPresented: $isPresented, bindPresentation: bindPresentation)
     }
     func picker(isPresented: Binding<Bool>) -> Self {
-        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabled, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: isPresented, bindPresentation: true)
+        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabledPicker, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: isPresented, bindPresentation: true)
     }
 }
 #endif
