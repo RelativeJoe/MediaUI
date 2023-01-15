@@ -26,8 +26,8 @@ public struct MediaImage<Media: Mediable>: View {
         Button(action: {
             presentable.isPresented.toggle()
         }) {
-            if let mediable = mediable, mediable.data != Data() {
-                DownsampledImage(image: mediable.data.unImage, settings: settings)
+            if let mediable = mediable, mediable.data != Data() && presentable.mediaState == .empty {
+                DownsampledImage(media: mediable, settings: settings)
             }else {
                 switch presentable.mediaState {
                     case .failure(let error):
