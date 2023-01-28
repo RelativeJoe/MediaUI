@@ -41,7 +41,7 @@ public struct NetworkImage: View {
                 case .error:
                     errorView?(error) ?? (settings.placeHolder ?? AnyView(Text(error ?? "")))
             }
-        }
+        }.frame(width: settings.width, height: settings.height)
     }
 }
 
