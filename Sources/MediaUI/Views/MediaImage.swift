@@ -79,12 +79,12 @@ public extension MediaImage {
 //MARK: - Private Initializer
 @available(iOS 16.0, macOS 13.0, *)
 private extension MediaImage {
-    init(mediable: Binding<Media>, height: CGFloat?, width: CGFloat?, squared: Bool, aspectRatio: (CGFloat?, ContentMode)?, resizable: Bool, disabled: Bool, content: AnyView?, item: Binding<PhotosPickerItem?>, override: Bool, isPresented: Binding<Bool>, bindPresentation: Bool) {
+    init(mediable: Binding<Media>, height: CGFloat?, width: CGFloat?, squared: Bool, aspectRatio: (CGFloat?, ContentMode)?, resizable: Bool, disabled: Bool, content: AnyView?, item: Binding<PhotosPickerItem?>, override: Bool, isPresented: Binding<Bool>, bindPresentation: Bool, onSize: ((CGSize) -> Void)?) {
         self._mediable = mediable
         self.disabledPicker = disabled
         self.overridePicker = override
         self._overridenPickerItem = item
-        self.settings = ImageSettings(height: height, width: width, placeHolder: content, squared: squared, resizable: resizable, aspectRatio: aspectRatio)
+        self.settings = ImageSettings(height: height, width: width, placeHolder: content, squared: squared, resizable: resizable, aspectRatio: aspectRatio, onSize: onSize)
         self._isPresented = isPresented
         self.bindPresentation = bindPresentation
     }
@@ -123,33 +123,36 @@ private extension MediaImage {
 public extension MediaImage {
 ///MediaImage: Make the Image take the Shape of a square.
     func squaredImage() -> Self {
-        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: true, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabledPicker, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: $isPresented, bindPresentation: bindPresentation)
+        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: true, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabledPicker, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: $isPresented, bindPresentation: bindPresentation, onSize: settings.onSize)
     }
 ////MediaImage: Sets the mode by which SwiftUI resizes an Image to fit it's space.
     func isResizable() -> Self {
-        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: true, disabled: disabledPicker, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: $isPresented, bindPresentation: bindPresentation)
+        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: true, disabled: disabledPicker, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: $isPresented, bindPresentation: bindPresentation, onSize: settings.onSize)
     }
 ///MediaImage: Constrains this View's dimesnions to the specified aspect rario.
     func aspect(_ ratio: CGFloat? = nil, contentMode: ContentMode) -> Self {
-        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: (ratio, contentMode), resizable: settings.resizable, disabled: disabledPicker, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: $isPresented, bindPresentation: bindPresentation)
+        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: (ratio, contentMode), resizable: settings.resizable, disabled: disabledPicker, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: $isPresented, bindPresentation: bindPresentation, onSize: settings.onSize)
     }
 ///MediaImage: Positions this View within an invisible frame with the specified size.
     func frame(width: CGFloat? = nil, height: CGFloat? = nil) -> Self {
-        MediaImage(mediable: $mediable, height: height, width: width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabledPicker, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: $isPresented, bindPresentation: bindPresentation)
+        MediaImage(mediable: $mediable, height: height, width: width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabledPicker, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: $isPresented, bindPresentation: bindPresentation, onSize: settings.onSize)
     }
 ///MediaImage: Adds a placeholder View if no Image can be displayed.
     func placeHolder(@ViewBuilder placeholder: () -> some View) -> Self {
-        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabledPicker, content: AnyView(placeholder()), item: $overridenPickerItem, override: overridePicker, isPresented: $isPresented, bindPresentation: bindPresentation)
+        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabledPicker, content: AnyView(placeholder()), item: $overridenPickerItem, override: overridePicker, isPresented: $isPresented, bindPresentation: bindPresentation, onSize: settings.onSize)
     }
 ///MediaImage: Disables the PhotosPicker button.
     func disabledPicker(_ disabled: Bool = true) -> Self {
-        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabled, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: $isPresented, bindPresentation: bindPresentation)
+        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabled, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: $isPresented, bindPresentation: bindPresentation, onSize: settings.onSize)
     }
     func using(item: Binding<PhotosPickerItem?>) -> Self {
-        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabledPicker, content: settings.placeHolder, item: item, override: true, isPresented: $isPresented, bindPresentation: bindPresentation)
+        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabledPicker, content: settings.placeHolder, item: item, override: true, isPresented: $isPresented, bindPresentation: bindPresentation, onSize: settings.onSize)
     }
     func picker(isPresented: Binding<Bool>) -> Self {
-        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabledPicker, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: isPresented, bindPresentation: true)
+        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabledPicker, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: isPresented, bindPresentation: true, onSize: settings.onSize)
+    }
+    func imageSize(_ onSize: ((CGSize) -> Void)?) -> Self {
+        MediaImage(mediable: $mediable, height: settings.height, width: settings.width, squared: settings.squared, aspectRatio: settings.aspectRatio, resizable: settings.resizable, disabled: disabledPicker, content: settings.placeHolder, item: $overridenPickerItem, override: overridePicker, isPresented: $isPresented, bindPresentation: true, onSize: onSize)
     }
 }
 #endif

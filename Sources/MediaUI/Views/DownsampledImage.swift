@@ -10,6 +10,7 @@ import STools
 ///MediaUI: A DownsampledImage is a View that displays an Image in a Downsampled style.
 public struct DownsampledImage: View {
 //MARK: - Properties
+    @State private var imageSize: CGSize?
     @State private var oldImage: UNImage?
     @State private var height: CGFloat?
     @State private var width: CGFloat?
@@ -19,6 +20,7 @@ public struct DownsampledImage: View {
     private let squared: Bool
     private let resizable: Bool
     private let aspectRatio: (CGFloat?, ContentMode)?
+    private let onSize: ((CGSize) -> Void)?
 //MARK: - View
     public var body: some View {
         content
@@ -32,6 +34,9 @@ public struct DownsampledImage: View {
             }.onAppear {
                 guard let data else {return}
                 oldImage = UNImage(data: data)
+            }.change(of: imageSize) { newValue in
+                guard let newValue else {return}
+                onSize?(newValue)
             }
     }
     @ViewBuilder var content: some View {
@@ -39,13 +44,13 @@ public struct DownsampledImage: View {
             if let width = width, let height = height, let image = oldImage.downsampledImage(maxWidth: width, maxHeight: height) {
                 let maxDimensions = image.maxDimensions(width: width, height: height)
                 viewForImage(image)
-                    .framey(width: maxDimensions.width, height: maxDimensions.height, masterWidth: width, masterHeight: height, master: squared)
+                    .imageFrame(width: maxDimensions.width, height: maxDimensions.height, masterWidth: width, masterHeight: height, master: squared, size: $imageSize)
             }else if let width = width, let image = oldImage.downsampledImage(width: width) {
                 viewForImage(image)
-                    .framey(width: width, height: image.fitHeight(for: width), masterWidth: width, masterHeight: height, master: squared)
+                    .imageFrame(width: width, height: image.fitHeight(for: width), masterWidth: width, masterHeight: height, master: squared, size: $imageSize)
             }else if let height = height, let image = oldImage.downsampledImage(height: height) {
                 viewForImage(image)
-                    .framey(width: image.fitWidth(for: height), height: height, masterWidth: width, masterHeight: height, master: squared)
+                    .imageFrame(width: image.fitWidth(for: height), height: height, masterWidth: width, masterHeight: height, master: squared, size: $imageSize)
             }else {
                 placeHolder ?? AnyView(Color.clear)
             }
@@ -70,6 +75,7 @@ public extension DownsampledImage {
         self.aspectRatio = settings.aspectRatio
         self.resizable = settings.resizable
         self.placeHolder = settings.placeHolder
+        self.onSize = settings.onSize
     }
 ///MediaUI: Initialize a DownsampledImage from a UNImage, & some optional settings.
     init(image: UNImage?, settings: ImageSettings = ImageSettings()) {
@@ -84,6 +90,7 @@ public extension DownsampledImage {
         if settings.height != nil || settings.width != nil {
             self.dynamicSize = false
         }
+        self.onSize = settings.onSize
     }
 }
 
@@ -103,12 +110,13 @@ public extension DownsampledImage {
         if settings.height != nil || settings.width != nil {
             self.dynamicSize = false
         }
+        self.onSize = settings.onSize
     }
 }
 
 //MARK: - Internal Initializer
 internal extension DownsampledImage {
-    init(data: Data?, image: UNImage?, height: CGFloat?, width: CGFloat?, squared: Bool, aspectRatio: (CGFloat?, ContentMode)?, resizable: Bool, content: AnyView?) {
+    init(data: Data?, image: UNImage?, height: CGFloat?, width: CGFloat?, squared: Bool, aspectRatio: (CGFloat?, ContentMode)?, resizable: Bool, content: AnyView?, onSize: ((CGSize) -> Void)?) {
         self._oldImage = State(initialValue: image)
         self._height = State(initialValue: height)
         self._width = State(initialValue: width)
@@ -120,6 +128,7 @@ internal extension DownsampledImage {
         self.aspectRatio = aspectRatio
         self.placeHolder = content
         self.resizable = resizable
+        self.onSize = onSize
     }
 }
 
@@ -141,22 +150,35 @@ private extension DownsampledImage {
 public extension DownsampledImage {
 ///DownsampledImage: Make the Image take the Shape of a square.
     func squaredImage() -> Self {
-        DownsampledImage(data: data, image: oldImage, height: height, width: width, squared: true, aspectRatio: (nil, .fill), resizable: resizable, content: placeHolder)
+        DownsampledImage(data: data, image: oldImage, height: height, width: width, squared: true, aspectRatio: (nil, .fill), resizable: resizable, content: placeHolder, onSize: onSize)
     }
 ///DownsampledImage: Sets the mode by which SwiftUI resizes an Image to fit it's space.
     func isResizable() -> Self {
-        DownsampledImage(data: data, image: oldImage, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: true, content: placeHolder)
+        DownsampledImage(data: data, image: oldImage, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: true, content: placeHolder, onSize: onSize)
     }
 ///DownsampledImage: Constrains this View's dimesnions to the specified aspect rario.
     func aspect(_ ratio: CGFloat? = nil, contentMode: ContentMode) -> Self {
-        DownsampledImage(data: data, image: oldImage, height: height, width: width, squared: squared, aspectRatio: (ratio, contentMode), resizable: resizable, content: placeHolder)
+        DownsampledImage(data: data, image: oldImage, height: height, width: width, squared: squared, aspectRatio: (ratio, contentMode), resizable: resizable, content: placeHolder, onSize: onSize)
     }
 ///DownsampledImage: Positions this View within an invisible frame with the specified size.
     func frame(width: CGFloat? = nil, height: CGFloat? = nil) -> Self  {
-        DownsampledImage(data: data, image: oldImage, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, content: placeHolder)
+        DownsampledImage(data: data, image: oldImage, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, content: placeHolder, onSize: onSize)
     }
 ///DownsampledImage: Adds a placeholder View if no Image can be displayed.
     func placeHolder(@ViewBuilder placeholder: () -> some View) -> Self {
-        DownsampledImage(data: data, image: oldImage, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, content: AnyView(placeholder()))
+        DownsampledImage(data: data, image: oldImage, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, content: AnyView(placeholder()), onSize: onSize)
+    }
+    func imageSize(_ onSize: ((CGSize) -> Void)?) -> Self {
+        DownsampledImage(data: data, image: oldImage, height: height, width: width, squared: squared, aspectRatio: aspectRatio, resizable: resizable, content: placeHolder, onSize: onSize)
+    }
+}
+
+private extension View {
+    @ViewBuilder func imageFrame(width: CGFloat, height: CGFloat, masterWidth: CGFloat? = nil, masterHeight: CGFloat? = nil, master: Bool, size: Binding<CGSize?>) -> some View {
+        self
+            .frame(width: master ? (masterWidth ?? width): width, height: master ? (masterHeight ?? height): height)
+            .onAppear {
+                size.wrappedValue = CGSize(width: master ? (masterWidth ?? width): width, height: master ? (masterHeight ?? height): height)
+            }
     }
 }

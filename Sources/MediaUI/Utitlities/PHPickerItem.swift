@@ -19,7 +19,7 @@ public struct PHPickerItem: Identifiable {
     internal func getItemType() throws -> ItemType {
         guard let itemType = itemType else {
             guard let error = error else {
-                throw ItemError.unexpected
+                throw MediaError.unexpected
             }
             throw error
         }
@@ -46,10 +46,5 @@ public enum ItemType: Equatable {
                 return 1
         }
     }
-}
-
-@available(iOS 14.0, macOS 13.0, *)
-public enum ItemError: Error, Equatable {
-    case unknown, unexpected
 }
 #endif
