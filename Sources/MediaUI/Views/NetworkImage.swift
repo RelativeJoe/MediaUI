@@ -60,7 +60,7 @@ private extension NetworkImage {
             unImage = image
             imageState = .idle
         }else {
-            Task.detached {
+            Task.detached(priority: .background) {
                 do {
                     await MainActor.run {
                         imageState = .loading
