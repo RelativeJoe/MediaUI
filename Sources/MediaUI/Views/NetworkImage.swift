@@ -16,7 +16,7 @@ public struct NetworkImage: View {
     @State private var imageState = ImageState.loading
     @State private var error: String?
     @State private var unImage: UNImage?
-    @State private var imageURL: URL?
+    @State public var imageURL: URL?
     private let loading: AnyView?
     private let errorView: ((String?) -> AnyView)?
     public var settings = ImageSettings()
