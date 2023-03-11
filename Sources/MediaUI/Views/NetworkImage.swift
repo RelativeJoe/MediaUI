@@ -44,6 +44,7 @@ public struct NetworkImage: View {
                     errorView?(error) ?? (settings.placeHolder ?? AnyView(Text(error ?? "")))
             }
         }.frame(width: settings.width, height: settings.height)
+        .animation(.easeInOut, value: imageState)
     }
 }
 
@@ -62,19 +63,19 @@ private extension NetworkImage {
         }else {
             Task.detached(priority: .background) {
                 do {
-                    await MainActor.run {
+//                    await MainActor.run {
                         imageState = .loading
-                    }
+//                    }
                     let data = try await URLSession.shared.data(from: imageURL).0
-                    await MainActor.run {
+//                    await MainActor.run {
                         unImage = UNImage(data: data)
                         imageState = .idle
-                    }
+//                    }
                 }catch {
-                    await MainActor.run {
+//                    await MainActor.run {
                         self.error = error.localizedDescription
                         imageState = .error
-                    }
+//                    }
                 }
             }
         }
