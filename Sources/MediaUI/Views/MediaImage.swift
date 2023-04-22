@@ -34,7 +34,7 @@ public struct MediaImage<Media: Mediable>: View {
                 case .success(let anyImage):
                     DownsampledImage(image: anyImage.unImage, settings: settings)
                 case .empty:
-                    if let mediable = mediable, mediable.data != Data() {
+                    if mediable.data != Data() {
                         DownsampledImage(media: mediable, settings: settings)
                     }else {
                         settings.placeHolder
