@@ -25,7 +25,7 @@ public struct DownsampledImage: View {
     public var body: some View {
         content
             .clipped()
-            .stateModifier(dynamicSize) { view in
+            .state(dynamicSize) { view in
                 view
                     .onSizeChange { size in
                         height = size.height
@@ -136,10 +136,10 @@ internal extension DownsampledImage {
 private extension DownsampledImage {
     @ViewBuilder func viewForImage(_ unImage: UNImage) -> some View {
         Image(unImage: unImage)
-            .stateModifier(resizable) { image in
+            .state(resizable) { image in
                 image
                     .resizable()
-            }.stateModifier(aspectRatio != nil) { view in
+            }.state(aspectRatio != nil) { view in
                 view
                     .aspectRatio(aspectRatio?.0, contentMode: aspectRatio!.1)
             }

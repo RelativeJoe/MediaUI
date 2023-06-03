@@ -41,12 +41,12 @@ public struct MediaImage<Media: Mediable>: View {
                     }
             }
         }.disabled(disabledPicker)
-        .stateModifier(overridePicker) { view in
+        .state(overridePicker) { view in
             view
                 .onChange(of: overridenPickerItem) { newValue in
                     updateState(pickerItem: newValue)
                 }
-        }.stateModifier(!overridePicker) { view in
+        }.state(!overridePicker) { view in
             view
                 .photosPicker(isPresented: $presentable.isPresented, selection: $presentable.pickerItem, matching: .images)
                 .onChange(of: presentable.pickerItem) { newValue in

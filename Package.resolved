@@ -1,14 +1,16 @@
 {
-  "pins" : [
-    {
-      "identity" : "stools",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/TimmysApp/STools",
-      "state" : {
-        "revision" : "ea876036fc53be40f564b24d3c267b447416dc1d",
-        "version" : "1.0.81"
+  "object": {
+    "pins": [
+      {
+        "package": "STools",
+        "repositoryURL": "https://github.com/TimmysApp/STools",
+        "state": {
+          "branch": "master",
+          "revision": "6fcfccb592f0c2dd22e3dc69e4757127b0dafbc1",
+          "version": null
+        }
       }
-    }
-  ],
-  "version" : 2
+    ]
+  },
+  "version": 1
 }

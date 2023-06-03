@@ -15,7 +15,7 @@ let package = Package(
             targets: ["MediaUI"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/TimmysApp/STools", "1.0.81"..<"2.0.0")
+        .package(url: "https://github.com/TimmysApp/STools", branch: "master")
     ],
     targets: [
         .target(

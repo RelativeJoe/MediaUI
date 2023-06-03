@@ -42,7 +42,7 @@ public struct MediaSet<Medias: Mediable, Content: View>: View {
                     contentForMedia?(DownsampledImage(image: content[index].data.unImage), item, index)
                 }
             }
-        }.stateModifier(overridePicker) { view in
+        }.state(overridePicker) { view in
             view
                 .onChange(of: overridenPickerItems) { newValue in
                     newValue.forEach { _ in
@@ -52,7 +52,7 @@ public struct MediaSet<Medias: Mediable, Content: View>: View {
                         updateState(pickerItem: item)
                     }
                 }
-        }.stateModifier(!overridePicker) { view in
+        }.state(!overridePicker) { view in
             view
                 .photosPicker(isPresented: $isPresented, selection: $pickerItems, maxSelectionCount: maxSelectionCount, selectionBehavior: behavior, matching: filter, preferredItemEncoding: encoding, photoLibrary: library)
                 .onChange(of: pickerItems) { newValue in

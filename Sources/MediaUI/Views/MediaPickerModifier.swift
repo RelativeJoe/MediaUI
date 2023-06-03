@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import STools
 
 @available(iOS 16.0, *)
 struct MediaPickerModifier: ViewModifier {
@@ -13,10 +14,10 @@ struct MediaPickerModifier: ViewModifier {
     @StateObject var pickerData = MediaPickerData.shared
     func body(content: Content) -> some View {
         content
-            .stateModifier(pickerData.mode == .multiple) { view in
+            .state(pickerData.mode == .multiple) { view in
                 view
                     .photosPicker(isPresented: $pickerData.isPresented, selection: $pickerData.multiSelection, photoLibrary: .shared())
-            }.stateModifier(pickerData.mode == .single) { view in
+            }.state(pickerData.mode == .single) { view in
                 view
                     .photosPicker(isPresented: $pickerData.isPresented, selection: $pickerData.singleSelection, photoLibrary: .shared())
             }.onChange(of: pickerData.selectionFinished) { newValue in
