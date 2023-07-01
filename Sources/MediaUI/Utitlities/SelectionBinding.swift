@@ -13,7 +13,7 @@ public protocol SelectionBinding {
     var type: SelectionType.Type {get}
 }
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 public struct SingleSelectionPickerBinding: SelectionBinding {
     public var type = PhotosPickerItem.self
     @MainActor public func presentPicker() throws {
@@ -27,7 +27,7 @@ public struct SingleSelectionPickerBinding: SelectionBinding {
 }
 
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 public struct MultipleSelectionPickerBinding: SelectionBinding {
     public var type = [PhotosPickerItem].self
 ///MediaUI: Presents the attached media picker. To get the picked items, use MediaPicker's projected value ($picker)
@@ -42,7 +42,7 @@ public struct MultipleSelectionPickerBinding: SelectionBinding {
     }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 public struct PickerValues {
     public var single = SingleSelectionPickerBinding()
     public var multiple = MultipleSelectionPickerBinding()

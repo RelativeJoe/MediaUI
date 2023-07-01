@@ -8,7 +8,7 @@
 import SwiftUI
 import PhotosUI
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 @propertyWrapper public struct MediaPicker<Value: SelectionBinding>: DynamicProperty {
     @StateObject var pickerData = MediaPickerData.shared
     var binding: Value

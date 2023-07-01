@@ -9,7 +9,7 @@ import SwiftUI
 import PhotosUI
 import Combine
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 @MainActor public class MediaPickerData: ObservableObject {
     //MARK: - Properties
     static internal let shared = MediaPickerData()
