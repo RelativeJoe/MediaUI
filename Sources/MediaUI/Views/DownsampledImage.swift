@@ -31,7 +31,7 @@ public struct DownsampledImage: View {
                         height = size.height
                         width = size.width
                     }
-            }.onAppear {
+            }.onTask(priority: .background) {
                 guard let data else {return}
                 oldImage = UNImage(data: data)
             }.change(of: imageSize) { newValue in
