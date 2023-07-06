@@ -12,6 +12,5 @@ import PhotosUI
 @available(iOS 16.0, macOS 13.0, *)
 public protocol Mediable: Identifiable, Hashable, Equatable {
     var id: UUID? {get set}
-    var data: Data {get set}
-    static var empty: Self {get}
+    var data: Data? {get set}
 }

@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  MediaPickerViewModifier.swift
 //  
 //
 //  Created by Joe Maghzal on 06/03/2023.
@@ -9,7 +9,7 @@ import SwiftUI
 import STools
 
 @available(iOS 16.0, macOS 13.0, *)
-struct MediaPickerModifier: ViewModifier {
+struct MediaPickerViewModifier: ViewModifier {
     @MediaPicker(\.multiple) var picker
     @StateObject var pickerData = MediaPickerData.shared
     func body(content: Content) -> some View {
@@ -27,8 +27,8 @@ struct MediaPickerModifier: ViewModifier {
 }
 
 @available(iOS 16.0, macOS 13.0, *)
-extension View {
+public extension View {
     func attachPicker() -> some View {
-        modifier(MediaPickerModifier())
+        modifier(MediaPickerViewModifier())
     }
 }

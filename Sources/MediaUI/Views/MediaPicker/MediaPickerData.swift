@@ -11,10 +11,10 @@ import Combine
 
 @available(iOS 16.0, macOS 13.0, *)
 @MainActor public class MediaPickerData: ObservableObject {
-    //MARK: - Properties
+//MARK: - Properties
     static internal let shared = MediaPickerData()
     private var cancellables: AnyCancellable?
-    //MARK: - Publishers
+//MARK: - Publishers
     @Published internal var mode: PickerMode?
     @Published internal var isPresented = false
     @Published internal var multiSelection = [PhotosPickerItem]()
@@ -23,7 +23,7 @@ import Combine
     internal var selectionFinished: Bool {
         return !multiSelection.isEmpty || singleSelection != nil
     }
-    //MARK: - Functions
+//MARK: - Functions
     internal func present(picker mode: PickerMode) async throws {
         guard !isPresented else {
             throw MediaError.pickerAlreadyPresented

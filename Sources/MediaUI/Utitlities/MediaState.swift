@@ -9,17 +9,15 @@ import SwiftUI
 
 ///MediaUI: Respresentation of the state of an image.
 public enum MediaState {
-    case empty, loading, success(AnyImage), failure(Error)
+    case idle, loading, failure(Error)
     public var id: Int {
         switch self {
-            case .empty:
+            case .idle:
                 return 0
             case .loading:
                 return 1
-            case .success:
-                return 2
             case .failure:
-                return 3
+                return 2
         }
     }
 }

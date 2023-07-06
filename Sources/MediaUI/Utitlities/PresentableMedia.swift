@@ -11,10 +11,7 @@ import PhotosUI
 
 @available(iOS 16.0, macOS 13.0, *)
 internal struct PresentableMedia: Hashable {
-    internal var isPresented = false
-    internal var selected = false
-    internal var anyImage = AnyImage.empty
-    internal var mediaState = MediaState.empty
+    internal var mediaState = MediaState.idle
     internal var pickerItem: PhotosPickerItem?
 }
 #endif

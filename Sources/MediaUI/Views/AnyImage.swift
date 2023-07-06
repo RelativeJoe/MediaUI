@@ -17,13 +17,17 @@ public struct AnyImage: View {
     public var unImage: UNImage?
 //MARK: - View
     public var body: some View {
-        image ?? Image("photo.fill")
+        if let image {
+            image
+        }else {
+            Color.clear
+        }
     }
 }
 
 //MARK: - Public Initializers
 public extension AnyImage {
-///MediaUI: Craetes Image, UNImage & View from some Data.
+///MediaUI: Creates Image, UNImage & View from Data.
     init(_ data: Data?) {
         guard let data = data else {return}
         self.data = data
@@ -33,13 +37,6 @@ public extension AnyImage {
         }else {
             self.image = nil
         }
-    }
-///MediaUI: Creates Data, UNImage & View from an Image.
-    init(_ image: Image?) {
-        guard let image = image else {return}
-        self.image = image
-        self.unImage = image.unImage
-        self.data = unImage?.asData(.high)
     }
 ///MediaUI: Creates Data, Image & View from an UNImage.
     init(_ unImage: UNImage?) {

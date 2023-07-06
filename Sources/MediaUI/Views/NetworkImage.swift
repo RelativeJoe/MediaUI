@@ -11,71 +11,61 @@ import PhotosUI
 import Combine
 
 ///MediaUI: A NetworkImage is a View that displays an Image from the internet in a Downsampled style.
-public struct NetworkImage: View {
+public struct NetworkImage<Loading: View, ErrorView: View>: View {
 //MARK: - Properties
     @State private var imageState = ImageState.loading
-    @State private var error: String?
-    @State private var unImage: UNImage?
-    @State public var imageURL: URL?
-    private let loading: AnyView?
-    private let errorView: ((String?) -> AnyView)?
-    public var settings = ImageSettings()
+    private let imageURL: URL?
+    private let loadingView: Loading?
+    private let errorView: ((Error) -> ErrorView)?
+    private let width: CGFloat?
+    private let height: CGFloat?
 //MARK: - View
     public var body: some View {
-        content
-            .onTask {
-                await load()
-            }
-    }
-    var content: some View {
-        Group {
-            switch imageState {
-                case .idle:
-                    DownsampledImage(image: unImage, settings: settings)
-                case .loading:
-                    if let loading {
-                        loading
+        switch imageState {
+            case .idle(let unImage):
+                DownsampledImage(image: unImage)
+                    .frame(width: width, height: height)
+            case .loading:
+                Group {
+                    if let loadingView {
+                        loadingView
                     }else {
-                        #if canImport(UIKit)
-                        ActivityView()
-                        #endif
+                        LoadingView()
                     }
-                case .error:
-                    errorView?(error) ?? (settings.placeHolder ?? AnyView(Text(error ?? "")))
-            }
-        }.frame(width: settings.width, height: settings.height)
-        .animation(.easeInOut, value: imageState)
+                }.withTask {
+                    await load()
+                }
+            case .error(let error):
+                if let errorView {
+                    errorView(error)
+                }else {
+                    Text(error.localizedDescription)
+                }
+        }
     }
 }
 
 //MARK: - Private Functions
 private extension NetworkImage {
     func load() async {
-        guard unImage == nil else {return}
         guard let imageURL else {
-            error = "Invalid Image URL"
-            imageState = .error
+            imageState = .error(MediaError.invalidURL)
             return
         }
         if let image = ImageConfigurations.cache.image(for: imageURL) {
-            unImage = image
-            imageState = .idle
+            imageState = .idle(image)
         }else {
-            Task.detached(priority: .background) {
+            Task(priority: .background) {
                 do {
-//                    await MainActor.run {
-                        imageState = .loading
-//                    }
+                    imageState = .loading
                     let data = try await URLSession.shared.data(from: imageURL).0
-//                    await MainActor.run {
-                        unImage = UNImage(data: data)
-                        imageState = .idle
-//                    }
+                    guard let image = UNImage(data: data) else {
+                        imageState = .error(MediaError.unexpected)
+                        return
+                    }
+                    imageState = .idle(image)
                 }catch {
-//                    await MainActor.run {
-                        self.error = error.localizedDescription
-                        imageState = .error
-//                    }
+                    imageState = .error(error)
                 }
             }
         }
@@ -83,73 +73,53 @@ private extension NetworkImage {
 }
 
 //MARK: - Public Initializers
-public extension NetworkImage {
-    ///MediaUI: Initialize a NetworkImage from a String.
+public extension NetworkImage where Loading == EmptyView, ErrorView == EmptyView {
+///MediaUI: Initialize a NetworkImage from a String.
     init(url: String?) {
-        if let url {
-            self._imageURL = State(wrappedValue: URL(string: url))
-        }
-        self.loading = nil
+        self.imageURL = URL(string: url ?? "")
+        self.loadingView = nil
         self.errorView = nil
+        self.width = nil
+        self.height = nil
     }
-    ///MediaUI: Initialize a NetworkImage from an URL.
+///MediaUI: Initialize a NetworkImage from an URL.
     init(url: URL?) {
-        self._imageURL = State(wrappedValue: url)
-        self.loading = nil
+        self.imageURL = url
+        self.loadingView = nil
         self.errorView = nil
+        self.width = nil
+        self.height = nil
     }
 }
 
 //MARK: - Internal Initializers
 internal extension NetworkImage {
-    init(imageState: ImageState = ImageState.idle, error: String?, unImage: UNImage?, imageURL: URL?, height: CGFloat?, width: CGFloat?, placeHolder: AnyView?, squared: Bool, resizable: Bool, aspectRatio: (CGFloat?, ContentMode)?, loading: AnyView?, errorView: ((String?) -> AnyView)?, onSize: ((CGSize) -> Void)?) {
-        self._imageState = State(wrappedValue: imageState)
-        self._error = State(wrappedValue: error)
-        self._unImage = State(wrappedValue: unImage)
-        self._imageURL = State(wrappedValue: imageURL)
-        self.loading = loading
+    init(imageState: ImageState, imageURL: URL?, width: CGFloat?, height: CGFloat?, loadingView: Loading?, errorView: ((Error) -> ErrorView)?) {
+        self._imageState = State(initialValue: imageState)
+        self.imageURL = imageURL
+        self.loadingView = loadingView
         self.errorView = errorView
-        self.settings = ImageSettings(height: height, width: width, placeHolder: placeHolder, squared: squared, resizable: resizable, aspectRatio: aspectRatio, onSize: onSize)
+        self.width = width
+        self.height = height
     }
 }
 
-///MARK: - Public Modifiers
+//MARK: - Public Modifiers
 public extension NetworkImage {
-    ///NetworkImage: Make the Image take the Shape of a square.
-    func squaredImage() -> Self {
-        NetworkImage(imageState: imageState, error: error, unImage: unImage, imageURL: imageURL, height: settings.height, width: settings.width, placeHolder: settings.placeHolder, squared: true, resizable: settings.resizable, aspectRatio: settings.aspectRatio, loading: loading, errorView: errorView, onSize: settings.onSize)
-    }
-    ///NetworkImage: Sets the mode by which SwiftUI resizes an Image to fit it's space.
-    func isResizable() -> Self {
-        NetworkImage(imageState: imageState, error: error, unImage: unImage, imageURL: imageURL, height: settings.height, width: settings.width, placeHolder: settings.placeHolder, squared: settings.squared, resizable: true, aspectRatio: settings.aspectRatio, loading: loading, errorView: errorView, onSize: settings.onSize)
-    }
-    ///NetworkImage: Constrains this View's dimesnions to the specified aspect rario.
-    func aspect(_ ratio: CGFloat? = nil, contentMode: ContentMode) -> Self {
-        NetworkImage(imageState: imageState, error: error, unImage: unImage, imageURL: imageURL, height: settings.height, width: settings.width, placeHolder: settings.placeHolder, squared: settings.squared, resizable: settings.resizable, aspectRatio: (ratio, contentMode), loading: loading, errorView: errorView, onSize: settings.onSize)
-    }
-    ///NetworkImage: Positions this View within an invisible frame with the specified size.
+///NetworkImage: Positions this View within an invisible frame with the specified size.
     func frame(width: CGFloat? = nil, height: CGFloat? = nil) -> Self  {
-        NetworkImage(imageState: imageState, error: error, unImage: unImage, imageURL: imageURL, height: height, width: width, placeHolder: settings.placeHolder, squared: settings.squared, resizable: settings.resizable, aspectRatio: settings.aspectRatio, loading: loading, errorView: errorView, onSize: settings.onSize)
+        NetworkImage(imageState: imageState, imageURL: imageURL, width: width, height: height, loadingView: loadingView, errorView: errorView)
     }
-    ///NetworkImage: Adds a placeholder View if no Image can be displayed.
-    func placeHolder(@ViewBuilder placeholder: () -> some View) -> Self {
-        NetworkImage(imageState: imageState, error: error, unImage: unImage, imageURL: imageURL, height: settings.height, width: settings.width, placeHolder: AnyView(placeholder()), squared: settings.squared, resizable: settings.resizable, aspectRatio: settings.aspectRatio, loading: loading, errorView: errorView, onSize: settings.onSize)
+///NetworkImage: Customize the loading View.
+    func onLoading(@ViewBuilder loadingView: () -> Loading) -> NetworkImage<Loading, ErrorView> {
+        NetworkImage(imageState: imageState, imageURL: imageURL, width: width, height: height, loadingView: loadingView(), errorView: errorView)
     }
-    ///NetworkImage: Customize the loading View.
-    func onLoading(@ViewBuilder loading: () -> some View) -> Self {
-        NetworkImage(imageState: imageState, error: error, unImage: unImage, imageURL: imageURL, height: settings.height, width: settings.width, placeHolder: settings.placeHolder, squared: settings.squared, resizable: settings.resizable, aspectRatio: settings.aspectRatio, loading: AnyView(loading()), errorView: errorView, onSize: settings.onSize)
-    }
-    func onError(@ViewBuilder errorView: @escaping (String?) -> some View) -> Self {
-        let closure: ((String?) -> AnyView) = { erroryy in
-            AnyView(errorView(erroryy))
-        }
-        return NetworkImage(imageState: imageState, error: error, unImage: unImage, imageURL: imageURL, height: settings.height, width: settings.width, placeHolder: settings.placeHolder, squared: settings.squared, resizable: settings.resizable, aspectRatio: settings.aspectRatio, loading: loading, errorView: closure, onSize: settings.onSize)
-    }
-    func imageSize(_ onSize: ((CGSize) -> Void)?) -> Self {
-        NetworkImage(imageState: imageState, error: error, unImage: unImage, imageURL: imageURL, height: settings.height, width: settings.width, placeHolder: settings.placeHolder, squared: settings.squared, resizable: settings.resizable, aspectRatio: settings.aspectRatio, loading: loading, errorView: errorView, onSize: onSize)
+///NetworkImage: Customize the error View.
+    func onError(@ViewBuilder errorView: @escaping (Error) -> ErrorView) ->  NetworkImage<Loading, ErrorView> {
+        NetworkImage(imageState: imageState, imageURL: imageURL, width: width, height: height, loadingView: loadingView, errorView: errorView)
     }
 }
 
-enum ImageState {
-    case idle, loading, error
+public enum ImageState {
+    case idle(UNImage), loading, error(Error)
 }

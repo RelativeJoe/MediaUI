@@ -10,7 +10,7 @@ import STools
 
 //MARK: - Public Functions
 public extension UNImage {
-    func asData(_ quality: ImageQuality) -> Data? {
+    func data(_ quality: ImageQuality) -> Data? {
         #if canImport(UIKit)
         return jpegData(compressionQuality: quality.rawValue)
         #elseif canImport(AppKit)
@@ -26,19 +26,29 @@ public extension UNImage {
         return ratio * width
     }
     func downsampledImage(width: CGFloat) -> UNImage? {
-        guard let image = self.asData(.high)?.downsample(to: CGSize(width: width, height: self.fitHeight(for: width))) else {
+        guard let image = data(.high)?.downsample(to: CGSize(width: width, height: fitHeight(for: width))) else {
             return nil
         }
         return image
     }
+    func downsampledImage(width: CGFloat?, height: CGFloat?) -> UNImage? {
+        if let width, let height {
+            return downsampledImage(maxWidth: width, maxHeight: height) 
+        }else if let width {
+            return downsampledImage(width: width)
+        }else if let height {
+            return downsampledImage(height: height)
+        }
+        return nil
+    }
     func downsampledImage(height: CGFloat) -> UNImage? {
-        guard let image = self.asData(.high)?.downsample(to: CGSize(width: self.fitWidth(for: height), height: height)) else {
+        guard let image = data(.high)?.downsample(to: CGSize(width: fitWidth(for: height), height: height)) else {
             return nil
         }
         return image
     }
     func downsampledImage(maxWidth: CGFloat, maxHeight: CGFloat) -> UNImage? {
-        let image = asData(.high)?.downsample(to: self.maxDimensions(width: maxWidth, height: maxHeight))
+        let image = data(.high)?.downsample(to: maxDimensions(width: maxWidth, height: maxHeight))
         return image
     }
     func maxDimensions(width: CGFloat, height: CGFloat) -> CGSize {
