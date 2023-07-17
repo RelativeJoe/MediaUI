@@ -8,7 +8,7 @@
 import SwiftUI
 import PhotosUI
 
-@available(iOS 14.0, *)
+@available(iOS 14.0, macOS 13.0, *)
 public struct PickerItem {
     public var item: Any
     public func decodeData() async throws -> Data {

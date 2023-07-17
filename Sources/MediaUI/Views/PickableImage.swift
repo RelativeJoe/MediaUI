@@ -13,10 +13,10 @@ import PhotosUI
 import STools
 
 @available(iOS 16.0, macOS 13.0, *)
-public struct PickableImage<Media: Mediable, PlaceholderContent: View, ErrorContent: View, LoadingContent: View>: View {
+public struct PickableImage<PlaceholderContent: View, ErrorContent: View, LoadingContent: View>: View {
 //MARK: - Properties
     @MediaPicker(\.single) var picker
-    @Binding private var mediable: Media
+    @Binding private var data: Data?
     @State private var state = MediaState.idle
     private let width: CGFloat?
     private let height: CGFloat?
@@ -34,7 +34,7 @@ public struct PickableImage<Media: Mediable, PlaceholderContent: View, ErrorCont
         }) {
             switch state {
                 case .idle:
-                    DownsampledImage(media: mediable)
+                    DownsampledImage(data: data)
                         .frame(width: width, height: height)
                         .placeholder {
                             placeholderView
@@ -56,8 +56,8 @@ public struct PickableImage<Media: Mediable, PlaceholderContent: View, ErrorCont
 @available(iOS 16.0, macOS 13.0, *)
 public extension PickableImage where PlaceholderContent == Color, ErrorContent == Text, LoadingContent == LoadingView {
 ///MediaUI: Initialize a MediaImage from  a Binding Mediable.
-    init(mediable: Binding<Media>) {
-        self._mediable = mediable
+    init(data: Binding<Data?>) {
+        self._data = data
         self.width = nil
         self.height = nil
         self.placeholderView = Color.clear
@@ -71,8 +71,8 @@ public extension PickableImage where PlaceholderContent == Color, ErrorContent =
 //MARK: - Internal Initializer
 @available(iOS 16.0, macOS 13.0, *)
 internal extension PickableImage {
-    init(mediable: Binding<Media>, width: CGFloat?, height: CGFloat?, placeholderView: PlaceholderContent, errorView: @escaping (Error) -> ErrorContent, loadingView: LoadingContent) {
-        self._mediable = mediable
+    init(data: Binding<Data?>, width: CGFloat?, height: CGFloat?, placeholderView: PlaceholderContent, errorView: @escaping (Error) -> ErrorContent, loadingView: LoadingContent) {
+        self._data = data
         self.width = width
         self.height = height
         self.placeholderView = placeholderView
@@ -88,7 +88,7 @@ private extension PickableImage {
         state = .loading
         do {
             guard let data = try await item.loadTransferable(type: Data.self) else {return}
-            mediable.data = data
+            self.data = data
             state = .idle
         }catch {
             state = .failure(error)
@@ -101,17 +101,17 @@ private extension PickableImage {
 public extension PickableImage {
 ///MediaImage: Positions this View within an invisible frame with the specified size.
     func frame(width: CGFloat? = nil, height: CGFloat? = nil) -> Self {
-        PickableImage(mediable: $mediable, width: width, height: height, placeholderView: placeholderView, errorView: errorView, loadingView: loadingView)
+        PickableImage(data: $data, width: width, height: height, placeholderView: placeholderView, errorView: errorView, loadingView: loadingView)
     }
 ///MediaImage: Adds a placeholder View if no Image can be displayed.
-    func placeholder<NewPlaceholderContent: View>(@ViewBuilder placeholderView: () -> NewPlaceholderContent) -> PickableImage<Media, NewPlaceholderContent, ErrorContent, LoadingContent> {
-        PickableImage<Media, NewPlaceholderContent, ErrorContent, LoadingContent>(mediable: $mediable, width: width, height: height, placeholderView: placeholderView(), errorView: errorView, loadingView: loadingView)
+    func placeholder<NewPlaceholderContent: View>(@ViewBuilder placeholderView: () -> NewPlaceholderContent) -> PickableImage<NewPlaceholderContent, ErrorContent, LoadingContent> {
+        PickableImage<NewPlaceholderContent, ErrorContent, LoadingContent>(data: $data, width: width, height: height, placeholderView: placeholderView(), errorView: errorView, loadingView: loadingView)
     }
-    func onError<NewErrorContent: View>(@ViewBuilder errorView: @escaping (Error) -> NewErrorContent) -> PickableImage<Media, PlaceholderContent, NewErrorContent, LoadingContent> {
-        PickableImage<Media, PlaceholderContent, NewErrorContent, LoadingContent>(mediable: $mediable, width: width, height: height, placeholderView: placeholderView, errorView: errorView, loadingView: loadingView)
+    func onError<NewErrorContent: View>(@ViewBuilder errorView: @escaping (Error) -> NewErrorContent) -> PickableImage<PlaceholderContent, NewErrorContent, LoadingContent> {
+        PickableImage<PlaceholderContent, NewErrorContent, LoadingContent>(data: $data, width: width, height: height, placeholderView: placeholderView, errorView: errorView, loadingView: loadingView)
     }
-    func onLoading<NewLoadingContent: View>(@ViewBuilder loadingView: () -> NewLoadingContent) -> PickableImage<Media, PlaceholderContent, ErrorContent, NewLoadingContent> {
-        PickableImage<Media, PlaceholderContent, ErrorContent, NewLoadingContent>(mediable: $mediable, width: width, height: height, placeholderView: placeholderView, errorView: errorView, loadingView: loadingView())
+    func onLoading<NewLoadingContent: View>(@ViewBuilder loadingView: () -> NewLoadingContent) -> PickableImage<PlaceholderContent, ErrorContent, NewLoadingContent> {
+        PickableImage<PlaceholderContent, ErrorContent, NewLoadingContent>(data: $data, width: width, height: height, placeholderView: placeholderView, errorView: errorView, loadingView: loadingView())
     }
 }
 #endif

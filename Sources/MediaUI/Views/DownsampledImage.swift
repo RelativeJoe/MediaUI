@@ -20,6 +20,7 @@ public struct DownsampledImage<Placeholder: View>: View {
         if let image {
             Image(unImage: image)
                 .resizable()
+                .frame(width: width, height: height)
         }else {
             placeholder
                 .onAppear {
@@ -34,33 +35,21 @@ public struct DownsampledImage<Placeholder: View>: View {
 }
 
 //MARK: - Public Initializer
-public extension DownsampledImage where Placeholder == Color  {
+public extension DownsampledImage where Placeholder == LoadingView  {
 ///MediaUI: Initialize a DownsampledImage from Data.
     init(data: Data?) {
         self.data = data
-        self.placeholder = Color.clear
+        self.placeholder = LoadingView()
         self.width = nil
         self.height = nil
     }
 ///MediaUI: Initialize a DownsampledImage from a UNImage.
     init(image: UNImage?) {
         self._image = State(initialValue: image)
-        self.placeholder = Color.clear
+        self.placeholder = LoadingView()
         self.width = nil
         self.height = nil
         self.data = nil
-    }
-}
-
-//MARK: - Public Initializer
-@available(iOS 16.0, macOS 13.0, *)
-public extension DownsampledImage where Placeholder == Color {
-///MediaUI: Initialize a DownsampledImage from Mediable.
-    init(media: (any Mediable)?) {
-        self.data = media?.data
-        self.placeholder = Color.clear
-        self.width = nil
-        self.height = nil
     }
 }
 
