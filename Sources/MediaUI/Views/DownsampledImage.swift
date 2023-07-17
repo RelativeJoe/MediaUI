@@ -53,16 +53,6 @@ public extension DownsampledImage where Placeholder == LoadingView  {
     }
 }
 
-//MARK: - Internal Initializer
-internal extension DownsampledImage {
-    init(data: Data?, placeholder: Placeholder, width: CGFloat?, height: CGFloat?) {
-        self.data = data
-        self.placeholder = placeholder
-        self.width = width
-        self.height = height
-    }
-}
-
 //MARK: - Public Modifiers
 public extension DownsampledImage {
 ///DownsampledImage: Adds a placeholder View if no Image can be displayed.

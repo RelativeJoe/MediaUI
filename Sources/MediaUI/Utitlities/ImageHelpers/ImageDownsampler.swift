@@ -19,10 +19,10 @@ public actor ImageDownsampler {
     }
     public init(_ image: UNImage?) {
         self.image = image
-        self.imageData = image?.data(.high)
+        self.imageData = nil
     }
     public init(data: Data?, image: UNImage?) {
-        self.imageData = data ?? image?.data(.high)
+        self.imageData = data
         self.image = image
     }
 //MARK: - Functions
@@ -36,7 +36,7 @@ public actor ImageDownsampler {
         return downsampled(for: ImageFitSizeBuilder(height: height), scale: scale)
     }
     public func downsampled(for sizeBuilder: ImageFitSizeBuilder, scale: CGFloat = 3) -> UNImage? {
-        guard let imageData, let image = image ?? UNImage(data: imageData) else {
+        guard let imageData = imageData ?? image?.data(.high), let image = image ?? UNImage(data: imageData) else {
             return nil
         }
         let size = sizeBuilder.build(for: image)
