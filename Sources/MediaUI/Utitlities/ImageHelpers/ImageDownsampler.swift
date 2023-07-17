@@ -21,6 +21,10 @@ public actor ImageDownsampler {
         self.image = image
         self.imageData = image?.data(.high)
     }
+    public init(data: Data?, image: UNImage?) {
+        self.imageData = data ?? image?.data(.high)
+        self.image = image
+    }
 //MARK: - Functions
     public func downsampled(width: CGFloat?, height: CGFloat?, scale: CGFloat = 3) -> UNImage? {
         return downsampled(for: ImageFitSizeBuilder(width: width, height: height), scale: scale)

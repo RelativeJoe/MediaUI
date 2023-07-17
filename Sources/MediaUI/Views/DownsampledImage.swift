@@ -26,8 +26,7 @@ public struct DownsampledImage<Placeholder: View>: View {
             placeholder
                 .onAppear {
                     Task.detached(priority: .userInitiated) {
-                        guard let rawImage = image ?? UNImage(data: data ?? Data()) else {return}
-                        let downsampler = ImageDownsampler(rawImage)
+                        let downsampler = ImageDownsampler(data: data, image: image)
                         image = await downsampler.downsampled(width: width, height: height, scale: displayScale)
                     }
                 }
