@@ -10,6 +10,7 @@ import STools
 ///MediaUI: A DownsampledImage is a View that displays an Image in a Downsampled style.
 public struct DownsampledImage<Placeholder: View>: View {
 //MARK: - Properties
+    @Environment(\.displayScale) var displayScale
     @State var image: UNImage?
     private var data: Data?
     private let placeholder: Placeholder
@@ -25,9 +26,9 @@ public struct DownsampledImage<Placeholder: View>: View {
             placeholder
                 .onAppear {
                     Task.detached(priority: .background) {
-                        let rawImage = image ?? UNImage(data: data ?? Data())
-                        guard let rawImage = rawImage else {return}
-                        image = rawImage.downsampledImage(width: width, height: height)
+                        guard let rawImage = image ?? UNImage(data: data ?? Data()) else {return}
+                        let downsampler = ImageDownsampler(rawImage)
+                        image = await downsampler.downsampled(width: width, height: height, scale: displayScale)
                     }
                 }
         }

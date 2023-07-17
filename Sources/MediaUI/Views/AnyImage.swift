@@ -43,7 +43,7 @@ public extension AnyImage {
         guard let unImage = unImage else {return}
         self.unImage = unImage
         self.image = Image(unImage: unImage)
-        self.data = unImage.asData(.high)
+        self.data = unImage.data(.high)
     }
 }
 
