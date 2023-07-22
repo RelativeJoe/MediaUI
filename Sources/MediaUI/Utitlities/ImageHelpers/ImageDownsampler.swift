@@ -27,15 +27,15 @@ public actor ImageDownsampler {
     }
 //MARK: - Functions
     public func downsampled(width: CGFloat?, height: CGFloat?, scale: CGFloat = 3) -> UNImage? {
-        return downsampled(for: ImageFitSizeBuilder(width: width, height: height), scale: scale)
+        return downsampled(for: ImageSizeBuilder(width: width, height: height), scale: scale)
     }
     public func downsampled(width: CGFloat?, scale: CGFloat = 3) -> UNImage? {
-        return downsampled(for: ImageFitSizeBuilder(width: width), scale: scale)
+        return downsampled(for: ImageSizeBuilder(width: width), scale: scale)
     }
     public func downsampled(height: CGFloat?, scale: CGFloat = 3) -> UNImage? {
-        return downsampled(for: ImageFitSizeBuilder(height: height), scale: scale)
+        return downsampled(for: ImageSizeBuilder(height: height), scale: scale)
     }
-    public func downsampled(for sizeBuilder: ImageFitSizeBuilder, scale: CGFloat = 3) -> UNImage? {
+    public func downsampled(for sizeBuilder: ImageSizeBuilder, scale: CGFloat = 3) -> UNImage? {
         guard let imageData = imageData ?? image?.data(.high), let image = image ?? UNImage(data: imageData) else {
             return nil
         }

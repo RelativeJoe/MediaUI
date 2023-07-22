@@ -8,7 +8,7 @@
 import SwiftUI
 import STools
 
-public struct ImageFitSizeBuilder {
+public struct ImageSizeBuilder {
 //MARK: - Properties
     private let width: CGFloat?
     private let height: CGFloat?
