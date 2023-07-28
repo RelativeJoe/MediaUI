@@ -26,20 +26,16 @@ public actor ImageDownsampler {
         self.image = image
     }
 //MARK: - Functions
-    public func downsampled(width: CGFloat?, height: CGFloat?, scale: CGFloat = 3) -> UNImage? {
-        return downsampled(for: ImageSizeBuilder(width: width, height: height), scale: scale)
-    }
-    public func downsampled(width: CGFloat?, scale: CGFloat = 3) -> UNImage? {
-        return downsampled(for: ImageSizeBuilder(width: width), scale: scale)
-    }
-    public func downsampled(height: CGFloat?, scale: CGFloat = 3) -> UNImage? {
-        return downsampled(for: ImageSizeBuilder(height: height), scale: scale)
-    }
-    public func downsampled(for sizeBuilder: ImageSizeBuilder, scale: CGFloat = 3) -> UNImage? {
+    public func downsampled(using builder: ImageSizeBuilder, scale: CGFloat = 3) -> (image: UNImage, size: CGSize)? {
         guard let imageData = imageData ?? image?.data(.high), let image = image ?? UNImage(data: imageData) else {
             return nil
         }
-        let size = sizeBuilder.build(for: image)
+        return downsampled(for: builder.build(for: image))
+    }
+    public func downsampled(for size: CGSize, scale: CGFloat = 3) -> (image: UNImage, size: CGSize)? {
+        guard let imageData = imageData ?? image?.data(.high) else {
+            return nil
+        }
         let maxPixelDimensions = max(size.width, size.height) * scale
         let downsamplingOptions = [
             kCGImageSourceCreateThumbnailFromImageAlways: true,
@@ -51,9 +47,9 @@ public actor ImageDownsampler {
             return nil
         }
 #if canImport(AppKit)
-        return UNImage(cgImage: cgImage, size: size)
+        return (UNImage(cgImage: cgImage, size: size), size)
 #else
-        return UNImage(cgImage: cgImage)
+        return (UNImage(cgImage: cgImage), size)
 #endif
     }
 }

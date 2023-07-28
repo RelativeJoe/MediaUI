@@ -12,62 +12,90 @@ public struct DownsampledImage<PlaceholderContent: View, ImageContent: View>: Vi
 //MARK: - Properties
     @Environment(\.displayScale) private var displayScale
     @State private var image: UNImage?
-    private var data: Data?
+    @State private var imageSize: CGSize?
+    private let rawImage: UNImage?
+    private let data: Data?
     private let placeholder: PlaceholderContent
     private let width: CGFloat?
     private let height: CGFloat?
-    private let imageBuilder: (Image) -> ImageContent
+    private let content: (Image, CGSize) -> ImageContent
 //MARK: - View
     public var body: some View {
-        if width != nil && height != nil {
-            content(width: width, height: height)
+        if let image, let imageSize {
+            content(Image(unImage: image), imageSize)
+                .state(width != nil || height != nil) { view in
+                    view
+                        .frame(width: width, height: height)
+                }
         }else {
-            GeometryReader { proxy in
-                content(width: proxy.size.width, height: proxy.size.height)
+            if width != nil || height != nil {
+                placeholderContent(width: width, height: height)
+            }else {
+                GeometryReader { proxy in
+                    placeholderContent(width: proxy.size.width, height: proxy.size.height)
+                }
             }
         }
     }
-    @ViewBuilder func content(width: CGFloat?, height: CGFloat?) -> some View {
-        if let image {
-            imageBuilder(Image(unImage: image))
-                .frame(width: width, height: height)
-        }else {
-            placeholder
-                .onAppear {
-                    Task.detached(priority: .userInitiated) {
-                        let downsampler = ImageDownsampler(data: data, image: image)
-                        let sizeBuilder = ImageSizeBuilder(width: width, height: height)
-                        image = await downsampler.downsampled(for: sizeBuilder, scale: displayScale)
-                    }
+    @ViewBuilder func placeholderContent(width: CGFloat?, height: CGFloat?) -> some View {
+        placeholder
+            .onAppear {
+                Task.detached(priority: .userInitiated) {
+                    let downsampler = ImageDownsampler(data: data, image: rawImage)
+                    let sizeBuilder = ImageSizeBuilder(width: width, height: height)
+                    let result = await downsampler.downsampled(using: sizeBuilder, scale: displayScale)
+                    image = result?.image
+                    imageSize = result?.size
                 }
-        }
+            }
     }
 }
 
 //MARK: - Public Initializer
 public extension DownsampledImage where PlaceholderContent == LoadingView, ImageContent == Image {
-///MediaUI: Initialize a DownsampledImage from Data.
+///MediaUI: Creates a DownsampledImage from Data.
     init(data: Data?) {
-        self.data = data
-        self.placeholder = LoadingView()
-        self.width = nil
-        self.height = nil
-        self.imageBuilder = { image in
+        self.init(data: data) { image, _ in
             image
                 .resizable()
         }
     }
-///MediaUI: Initialize a DownsampledImage from a UNImage.
+///MediaUI: Creates a DownsampledImage from an UNImage.
     init(image: UNImage?) {
-        self._image = State(initialValue: image)
+        self.init(image: image) { image, _ in
+            image
+                .resizable()
+        }
+    }
+///MediaUI: Creates a DownsampledImage from the specified named asset..
+    init(_ assetName: String) {
+        self.init(image: UNImage(named: assetName))
+    }
+}
+
+//MARK: - Public Initializer
+public extension DownsampledImage where PlaceholderContent == LoadingView {
+    ///MediaUI: Creates a DownsampledImage from Data.
+    init(data: Data?, @ViewBuilder content: @escaping (Image, CGSize) -> ImageContent) {
+        self.data = data
+        self.placeholder = LoadingView()
+        self.width = nil
+        self.height = nil
+        self.rawImage = nil
+        self.content = content
+    }
+    ///MediaUI: Creates a DownsampledImage from an UNImage.
+    init(image: UNImage?, @ViewBuilder content: @escaping (Image, CGSize) -> ImageContent) {
+        self.rawImage = image
         self.placeholder = LoadingView()
         self.width = nil
         self.height = nil
         self.data = nil
-        self.imageBuilder = { image in
-            image
-                .resizable()
-        }
+        self.content = content
+    }
+///MediaUI: Creates a DownsampledImage from the specified named asset..
+    init(_ assetName: String, @ViewBuilder content: @escaping (Image, CGSize) -> ImageContent) {
+        self.init(image: UNImage(named: assetName), content: content)
     }
 }
 
@@ -75,13 +103,10 @@ public extension DownsampledImage where PlaceholderContent == LoadingView, Image
 public extension DownsampledImage {
 ///DownsampledImage: Adds a placeholder View if no Image can be displayed.
     func placeholder<NewPlaceholderContent: View>(@ViewBuilder placeholder: () -> NewPlaceholderContent) -> DownsampledImage<NewPlaceholderContent, ImageContent> {
-        DownsampledImage<NewPlaceholderContent, ImageContent>(data: data, placeholder: placeholder(), width: width, height: height, imageBuilder: imageBuilder)
+        DownsampledImage<NewPlaceholderContent, ImageContent>(rawImage: rawImage, data: data, placeholder: placeholder(), width: width, height: height, content: content)
     }
 ///DownsampledImage: Provides the frame used to downsample the image.
     func frame(width: CGFloat? = nil, height: CGFloat? = nil) -> Self {
-        DownsampledImage(data: data, placeholder: placeholder, width: width, height: height, imageBuilder: imageBuilder)
-    }
-    func build<NewImageContent: View>(@ViewBuilder builder: @escaping (Image) -> NewImageContent) -> DownsampledImage<PlaceholderContent, NewImageContent> {
-        DownsampledImage<PlaceholderContent, NewImageContent>(data: data, placeholder: placeholder, width: width, height: height, imageBuilder: builder)
+        DownsampledImage(rawImage: rawImage, data: data, placeholder: placeholder, width: width, height: height, content: content)
     }
 }
