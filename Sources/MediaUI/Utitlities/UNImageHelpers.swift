@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension Data {
+public extension Data {
     init?(_ unImage: UNImage?) {
         var data: Data?
 #if canImport(UIKit)
@@ -23,7 +23,7 @@ extension Data {
     }
 }
 
-extension UNImage {
+public extension UNImage {
     convenience init(_ cgImage: CGImage, size: CGSize) {
 #if canImport(UIKit)
         self.init(cgImage: cgImage)
