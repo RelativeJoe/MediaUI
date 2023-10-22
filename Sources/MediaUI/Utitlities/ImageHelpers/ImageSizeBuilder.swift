@@ -25,9 +25,9 @@ public struct ImageSizeBuilder {
         self.height = height
     }
 //MARK: - Functions
-    public func build(for image: UNImage) -> CGSize {
-        let ratio = image.size.width / image.size.height
-        let inverseRatio = image.size.height / image.size.width
+    public func build(for size: CGSize) -> CGSize {
+        let ratio = size.width / size.height
+        let inverseRatio = size.height / size.width
         if let width, let height {
             let maxHeight = width / ratio
             if maxHeight > height {
