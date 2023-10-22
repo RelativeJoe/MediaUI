@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import STools
 
 public struct ImageSizeBuilder {
 //MARK: - Properties

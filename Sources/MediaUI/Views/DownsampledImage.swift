@@ -5,7 +5,6 @@
 //  Created by Joe Maghzal on 6/15/22.
 //
 import SwiftUI
-import STools
 
 ///MediaUI: A DownsampledImage is a View that displays an Image in a Downsampled style.
 public struct DownsampledImage<PlaceholderContent: View, ImageContent: View>: View {
@@ -23,7 +22,7 @@ public struct DownsampledImage<PlaceholderContent: View, ImageContent: View>: Vi
     public var body: some View {
         if let image, let imageSize {
             content(Image(unImage: image), imageSize)
-                .state(width != nil || height != nil) { view in
+                .modify(when: width != nil || height != nil) { view in
                     view
                         .frame(width: width, height: height)
                 }
@@ -37,17 +36,22 @@ public struct DownsampledImage<PlaceholderContent: View, ImageContent: View>: Vi
             }
         }
     }
-    @ViewBuilder func placeholderContent(width: CGFloat?, height: CGFloat?) -> some View {
+    @ViewBuilder private func placeholderContent(width: CGFloat?, height: CGFloat?) -> some View {
         placeholder
-            .onAppear {
-                Task.detached(priority: .userInitiated) {
-                    let downsampler = ImageDownsampler(data: data, image: rawImage)
-                    let sizeBuilder = ImageSizeBuilder(width: width, height: height)
-                    let result = await downsampler.downsampled(using: sizeBuilder, scale: displayScale)
-                    image = result?.image
-                    imageSize = result?.size
-                }
+            .task {
+                await downsample()
             }
+    }
+//MARK: - Functions
+    private func downsample() async {
+        guard let data = data ?? Data(rawImage), let rawImage = rawImage ?? UNImage(data: data) else {return}
+        let downsampler = ImageDownsampler(data)
+        let sizeBuilder = ImageSizeBuilder(width: width, height: height)
+        let size = sizeBuilder.build(for: rawImage)
+        guard let cgImage = await downsampler.downsampled(for: size, scale: displayScale) else {return}
+        let unImage = UNImage(cgImage: cgImage, size: size)
+        image = unImage
+        imageSize = size
     }
 }
 
@@ -78,7 +82,7 @@ public extension DownsampledImage where PlaceholderContent == LoadingView {
     ///MediaUI: Creates a DownsampledImage from Data.
     init(data: Data?, @ViewBuilder content: @escaping (Image, CGSize) -> ImageContent) {
         self.data = data
-        self.placeholder = LoadingView()
+        self.placeholder = ProgressView()
         self.width = nil
         self.height = nil
         self.rawImage = nil
@@ -87,7 +91,7 @@ public extension DownsampledImage where PlaceholderContent == LoadingView {
     ///MediaUI: Creates a DownsampledImage from an UNImage.
     init(image: UNImage?, @ViewBuilder content: @escaping (Image, CGSize) -> ImageContent) {
         self.rawImage = image
-        self.placeholder = LoadingView()
+        self.placeholder = ProgressView()
         self.width = nil
         self.height = nil
         self.data = nil

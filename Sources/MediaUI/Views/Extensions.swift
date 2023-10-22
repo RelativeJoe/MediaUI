@@ -17,4 +17,21 @@ public extension View {
     func frame(maxSize: CGSize, alignment: Alignment = .center) -> some View {
         frame(maxWidth: maxSize.width, maxHeight: maxSize.height, alignment: alignment)
     }
+    @ViewBuilder func modify<Content: View>(when condition: Bool, @ViewBuilder content: (Self) -> Content) -> some View {
+        if condition {
+            content(self)
+        }else {
+            self
+        }
+    }
+}
+
+extension Image {
+    init(unImage: UNImage) {
+#if canImport(UIKit)
+        self.init(uiImage: unImage)
+#elseif canImport(AppKit)
+        self.init(nsImage: unImage)
+#endif
+    }
 }

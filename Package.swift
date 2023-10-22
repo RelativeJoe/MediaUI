@@ -5,24 +5,15 @@ import PackageDescription
 let package = Package(
     name: "MediaUI",
     platforms: [
-           .iOS(.v13),
-           .macOS(.v12),
-           .watchOS(.v6)
-       ],
-    products: [
-        .library(
-            name: "MediaUI",
-            targets: ["MediaUI"]),
+        .iOS(.v15),
+        .macOS(.v12),
+        .watchOS(.v6)
     ],
-    dependencies: [
-        .package(url: "https://github.com/TimmysApp/STools", branch: "master")
+    products: [
+        .library(name: "MediaUI", targets: ["MediaUI"])
     ],
     targets: [
-        .target(
-            name: "MediaUI",
-            dependencies: [
-                .product(name: "STools", package: "STools")
-            ]),
+        .target(name: "MediaUI")
     ]
 )
 

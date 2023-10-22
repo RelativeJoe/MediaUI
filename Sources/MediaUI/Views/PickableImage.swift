@@ -10,7 +10,6 @@ import Foundation
 #if canImport(UIKit) || canImport(Charts)
 import SwiftUI
 import PhotosUI
-import STools
 
 @available(iOS 16.0, macOS 13.0, *)
 public struct PickableImage<PlaceholderContent: View, ErrorContent: View, LoadingContent: View>: View {
@@ -44,7 +43,7 @@ public struct PickableImage<PlaceholderContent: View, ErrorContent: View, Loadin
                 case .failure(let error):
                     errorView(error)
             }
-        }.onChange($picker) { newValue in
+        }.onChange(of: $picker) { newValue in
             Task.detached(priority: .background) {
                 await loadPickedPhoto(newValue)
             }

@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import STools
 
 ///MediaUI: Type erased Image.
 public struct AnyImage: View {
@@ -43,7 +42,7 @@ public extension AnyImage {
         guard let unImage = unImage else {return}
         self.unImage = unImage
         self.image = Image(unImage: unImage)
-        self.data = unImage.data(.high)
+        self.data = Data(unImage)
     }
 }
 
