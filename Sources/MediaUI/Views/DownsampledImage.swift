@@ -49,7 +49,7 @@ public struct DownsampledImage<PlaceholderContent: View, ImageContent: View>: Vi
         let sizeBuilder = ImageSizeBuilder(width: width, height: height)
         let size = sizeBuilder.build(for: rawImage)
         guard let cgImage = await downsampler.downsampled(for: size, scale: displayScale) else {return}
-        let unImage = UNImage(cgImage: cgImage, size: size)
+        let unImage = UNImage(cgImage, size: size)
         image = unImage
         imageSize = size
     }

@@ -7,7 +7,7 @@ let package = Package(
     platforms: [
         .iOS(.v15),
         .macOS(.v12),
-        .watchOS(.v6)
+        .watchOS(.v8)
     ],
     products: [
         .library(name: "MediaUI", targets: ["MediaUI"])
