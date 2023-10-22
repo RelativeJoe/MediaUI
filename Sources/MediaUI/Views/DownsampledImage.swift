@@ -39,11 +39,11 @@ public struct DownsampledImage<PlaceholderContent: View, ImageContent: View>: Vi
     @ViewBuilder private func placeholderContent(width: CGFloat?, height: CGFloat?) -> some View {
         placeholder
             .task {
-                await downsample()
+                await downsample(width: width, height: height)
             }
     }
 //MARK: - Functions
-    private func downsample() async {
+    private func downsample(width: CGFloat?, height: CGFloat?) async {
         guard let data = data ?? Data(rawImage), let rawImage = rawImage ?? UNImage(data: data) else {return}
         let downsampler = ImageDownsampler(data)
         let sizeBuilder = ImageSizeBuilder(width: width, height: height)
